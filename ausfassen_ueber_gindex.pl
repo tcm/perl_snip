@@ -15,7 +15,7 @@ my $str_user = "user1";
 my $str_password = "xxxxxxxxxx";
 
 # Verbindungsparameter Firebird
-my $dbhost = "vm-suse10-3-2";
+my $dbhost = "testserver2";
 my $str_user2 = "user1";
 my $str_password2 = "xxxxxxxxxxx";
 
