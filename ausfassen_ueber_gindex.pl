@@ -3,22 +3,23 @@
 ##############################################
 # Draft zum Ausfassen ueber GINDEX.
 # (jb) 17.08.2010
-# Version mit strikter Parameterpruefung
+#      27.10.2010
+# Version ohne strikte Plausibilitaetspruefung
 ##############################################
 
 use DBI;
 
-my $version = "0.97";
+my $version = "0.99";
 
 # Verbindungsparameter MS-SQLSERVER
 my $str_dbserver = "testserver1";
 my $str_user = "user1";
-my $str_password = "xxxxxxxxxxxx";
+my $str_password = "xxxxxxxxxxx";
 
 # Verbindungsparameter Firebird
 my $dbhost = "testserver2";
-my $str_user2 = "user1";
-my $str_password2 = "xxxxxxxxxxx";
+my $str_user2 = "user2";
+my $str_password2 = "xxxxxxxxx";
 
 my $sql;
 my $dbh;
@@ -29,7 +30,9 @@ my $str_eing_gindex;
 my $str_eing_gindex_view;
 my $str_eing_menge;
 my $str_eing_tnummer;
+my $str_eing_lagerplatz;
 my $int_pcount;
+my $str_dummy_lagerplatz = "L00-0000000000";
 
 my $clear = `clear`;
 
@@ -44,6 +47,13 @@ my $str_menge;
 my $bool_holdon_error;
 my $str_statustext_scr;
 my $str_ausgabezeile_scr;
+
+# Fehlerkonstanten.
+my $C_MENGE_NULL = 8;
+my $C_ARTIKELNUMMER_NULL = 4;
+my $C_LAGERPLATZ_FORMAT_FALSCH = 2;
+my $C_LAGERPLATZ_NULL = 1;
+
 
 ### Start-Bildschirm
 #####################
@@ -120,26 +130,24 @@ while (1) { # 2.
 		
 		# I.3 Artikelnummer und Menge vorhanden?
 		##################################################
+		if ( $row[6] ) {
+			$int_menge = $row[6];
+		} else {
+		    $int_menge = 0;
+		    $int_pcount += 8;
+			
+		}
+		
  		if ( $row[5] ) { 
 			    $str_tnummer = substr($row[5],0,9);
-			    $int_pcount++; 
-			
-			
-			if ( $row[6] ) { 
-			       $int_menge = $row[6];
-		    	   $int_pcount++;
-		    }
-			#last;
-			
 		} else {
-		    $str_tnummer = "(Null)";
-			print $clear;
-	    	print "Keine Artikelnummer\nvorhanden.\n";
-			
+			    $str_tnummer = "(Nicht gefunden)";
+		        $int_pcount += 4;	
+				print $clear;
+		    	print "Keine Artikelnummer\nvorhanden.\n";
 		}
 	
 	} else {
-	    # print "\a\a\n";
 		print $clear;
 		print "Kein GINDEX\nvorhanden.\n";
 	} 
@@ -172,25 +180,29 @@ while (1) { # 2.
 	 
 	$str_lagerplatz = $row[1];
 	if  ($str_lagerplatz =~ /^L\d\d-/ ) { 
-		$int_pcount++;
+	  #
 	} else {
-	print "Ungueltiger Lagerplatz\n";
+		print "Ungueltiger Lagerplatz\n";
+		$str_lagerplatz = $str_dummy_lagerplatz;
+		$int_pcount += 2;
 	}
 	 
 	} else {
-	$str_lagerplatz = "(Null)";
+		$str_lagerplatz = $str_dummy_lagerplatz;
+		$int_pcount += 1;
 	}
 	$sth->finish();
-	 
+	
 	################################################
 	$dbh->disconnect();
 
-    # Pruefen ob wir alle Parameter haben.
-	if ( $int_pcount < 3 ) {
-		# print "Es fehlt ein Parameter: $int_pcount\n";
-	    print "Artikelnummer: $str_tnummer\n";
+
+    # Pruefen die Parameter richtig sind.
+	# Wir sind mal nicht so streng.
+	# Nur die Menge ist wichtig!
+	if ( $int_pcount & $C_MENGE_NULL ) {
+	 	printf ("%010b\n",$int_pcount);
 	    print "Menge: $int_menge\n";
-	    print "Lagerplatz: $str_lagerplatz\n"; 
 		
 	} else {
 	    last;
@@ -239,9 +251,14 @@ until ($str_eing_tnummer eq $str_tnummer) {      # Entspricht die eingelesene Te
 	print "\nTeilenummer scannen:";                               
 	print "\nTN>";                               
 	chop($str_eing_tnummer = <STDIN>);
+   
+   if ($int_pcount & $C_ARTIKELNUMMER_NULL) {            # 1. Um aus dieser Schleife rauszukommen, 
+   		last;                                            # wenn wir keine Artikelnummer haben.
+	}
+		   
 
-   if ($str_eing_tnummer eq "99") {             # Um  aus dieser Schleife rauszukommen.
-	   last;
+   if ($str_eing_tnummer eq "99") {                     # 2. Um  aus dieser Schleife rauszukommen,
+	   last;                                            # wenn wir abbrechen wollen.  
 	}
 
 	if ($str_eing_tnummer ne $str_tnummer) {
@@ -250,16 +267,33 @@ until ($str_eing_tnummer eq $str_tnummer) {      # Entspricht die eingelesene Te
 	}
 
 }
+																	   
+$str_tnummer = $str_eing_tnummer;
 
-    # Evtl. die Menge korrigieren.
+    # Die Menge
+	# und den Lagerplatz abfragen.
     ################################
-	if ($str_eing_tnummer ne "99") {
-
+	if ($str_eing_tnummer ne "99") {                     # Menge und Lagerplatz nur abfragen, wenn wir nicht abbrechen wollen. 
+        
+		if ($int_pcount & $C_LAGERPLATZ_NULL ) {         # Lagerplatz nur abfragen, wenn wir keinen Lagerplatz ermitteln konnten.
+		
+        	# Lagerplatz abfragen.
+			#
+			$str_eing_lagerplatz = "";
+			until ($str_eing_lagerplatz ne "" and $str_eing_lagerplatz =~ /^L\d\d-/ ) {
+				print ("LP>");
+				chop($str_eing_lagerplatz = <STDIN>);
+        	}
+	        $str_lagerplatz = $str_eing_lagerplatz;
+		}
+	
+        # Menge abfragen.
+		#
 	    $str_eing_menge = "";
     	print "\nSOLL-STUECK: $int_menge";               # Soll-Menge anzeigen.
     	until ($str_eing_menge =~ /^\d+$/  and $str_eing_menge <= $int_menge + $int_abweichung) { 
 	
-	    	  print "\nStueckzahl eingeben:";
+	    	print "\nStueckzahl eingeben:";
           	print "\nST>";
 	      	chop($str_eing_menge = <STDIN>);
     	}
