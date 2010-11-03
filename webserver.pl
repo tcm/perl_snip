@@ -4,7 +4,11 @@
  
  use HTTP::Server::Simple::CGI;
  use base qw(HTTP::Server::Simple::CGI);
- 
+
+ use Net::Domain qw (hostname hostfqdn hostdomain); 
+
+ my $fqdn = hostfqdn();
+
  my %dispatch = (
      '/hello' => \&resp_hello,
      '/dienst' => \&resp_dienst
@@ -37,13 +41,15 @@
      
      my $who = $cgi->param('name');
      
+     
+
      print $cgi->header,
            $cgi->start_html("Hello"),
-	   $cgi->h1("Dienstmanager"), 
+	   $cgi->h1("Dienstmanager auf $fqdn"), 
 	   ("Button drücken um den Dienst neu zu starten."),
 
 	  
-	   ("<form action=\"http://vm-xp-test.domain-lokal.com:8080/dienst\">"),
+	   ("<form action=\"http://$fqdn:8080/dienst\">"),
 	   ("<input type=\"submit\" value=\" Absenden\">"),
 	   ("<input type=\"reset\" value=\" Abbrechen\">"),
 	   ("</form>"),
@@ -64,9 +70,9 @@
 	   $cgi->h1("Dienst neu starten."), 
            $cgi->end_html;
            
-	   system("serviceshutdown");
+	   system("ptcshutdown");
 	   sleep(6);
-	   system("servicestartserver");
+	   system("ptcstartserver");
  }
 
 
@@ -78,4 +84,5 @@
  # start the server on port 8080
  my $pid = MyWebServer->new(8080)->background();
  print "Use 'kill $pid' to stop server.\n";
+
 
