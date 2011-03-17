@@ -1,5 +1,4 @@
-#!/usr/bin/perl
-
+use strict;
 use Data::Dumper;
 use Getopt::Std;
 
@@ -11,7 +10,7 @@ my $i = 0;
 my %options; # assoziatives array fuer die uebergebenen Optionen
 my $quell_datei = "<Quelldatei>";
 my $ziel_datei = "<Zieldatei>";
-my $header_datei =  "<D:\\project_ics\\header.txt";
+my $header_datei =  "D:\\ics\\header.txt";
 
 getopts('123',\%options);
 
@@ -19,41 +18,42 @@ getopts('123',\%options);
 # Filterung: Jahr
 if(defined $options{1})
 {
-	$quell_datei =  "<D:\\project_ics\\buero.ics"; 
-	$ziel_datei =  ">D:\\project_ics\\buero_2009.ics";
+	$quell_datei =  "D:\\ics\\buero.ics"; 
+	$ziel_datei =  "D:\\ics\\buero_2010.ics";
 }
 
 # 2
 # Filterung: Urlaub
 if(defined $options{2})
 {
-	$quell_datei =  "<D:\\project_ics\\buero_2009.ics"; 
-	$ziel_datei =  ">D:\\project_ics\\buero_2009_urlaub.ics";
+	$quell_datei =  "D:\\ics\\buero_2010.ics"; 
+	$ziel_datei =  "D:\\ics\\buero_2010_urlaub.ics";
 }
 
 # 3
 # Filterung: Termine allgemein
 if(defined $options{3})
 {
-	$quell_datei =  "<D:\\project_ics\\buero_2009.ics"; 
-	$ziel_datei =  ">D:\\project_ics\\buero_2009_termine.ics";
+	$quell_datei =  "D:\\ics\\buero_2010.ics"; 
+	$ziel_datei =  "D:\\ics\\buero_2010_termine.ics";
 }
 
 
 
 
-open (QUELLE, $quell_datei) || die "$quell_datei konnte nicht geoeffnet werden.\n";
-open (ZIEL, $ziel_datei) || die "$ziel_datei konnte nicht geoeffnet werden.\n";
 
-# Header-Datei öffnen und als erstes vor die Ausgabedatei schreiben.
-open (HEADER, $header_datei) || die "$header_datei konnte nicht geoeffnet werden.\n";
-while( <HEADER> ) {
-	print ZIEL $_;
+open my $ziel_fh, '>', $ziel_datei || die "$ziel_datei konnte nicht geoeffnet werden.\n";
+# Header-Datei oeffnen und als erstes vor die Ausgabedatei schreiben.
+open my $header_fh , '<', $header_datei || die "$header_datei konnte nicht geoeffnet werden.\n";
+
+while( <$header_fh> ) {
+	print $ziel_fh $_;
 }
-close (HEADER);
+close ($header_fh);
 
 
-while (<QUELLE>) {
+open my $quelle_fh, '<', $quell_datei || die "$quell_datei konnte nicht geoeffnet werden.\n";
+while (<$quelle_fh>) {
 
 	SWITCH: {
 
@@ -84,10 +84,10 @@ while (<QUELLE>) {
 			# 1
 			# Filterung: Jahr
 			if(defined $options{1}) {
-				for $n ( 0 .. $#AoA ) {
-						if ( @{AoA[$n]} =~ /DATE:2009/ ) {
+				for my $n ( 0 .. $#AoA ) {
+						if ( @{AoA[$n]} =~ /DATE:2010/ ) {
 						        $match = 1; 
-							print "2009[$match]: @{AoA[$n]}"; }
+							print "2010[$match]: @{AoA[$n]}"; }
 				}
 
 			}
@@ -95,7 +95,7 @@ while (<QUELLE>) {
 			# 2
 			# Filterung: Urlaub
 			if(defined $options{2}) {
-				for $n ( 0 .. $#AoA ) {
+				for my $n ( 0 .. $#AoA ) {
 						if ( @{AoA[$n]} =~ /Urlaub/ ) {
 						        $match = 1;
 					       		print "Urlaub[$match]: @{AoA[$n]}\n"; }
@@ -107,7 +107,7 @@ while (<QUELLE>) {
 			if(defined $options{3}) {
 				$match = 1;
 				print "Not Urlaub[$match]: @{AoA[$n]}\n"; 
-				for $n ( 0 .. $#AoA ) {
+				for my $n ( 0 .. $#AoA ) {
 					if ( @{AoA[$n]} =~ /Urlaub/ ) {
 						        $match = 0;
 							
@@ -121,8 +121,8 @@ while (<QUELLE>) {
 			## ...und Record zurueckschreiben. 
 			if ($match == 1) {
 				$i++;
-				for $n ( 0 .. $#AoA ) {
-					print ZIEL "@{AoA[$n]}"; 
+				for my $n ( 0 .. $#AoA ) {
+					print $ziel_fh "@{AoA[$n]}"; 
 					$match = 0; }
 
 			
@@ -134,7 +134,10 @@ while (<QUELLE>) {
 
 	  push(@AoA, $_); } # Ende Switch	
 }
-print ZIEL "END:VCALENDAR\n"; # Gesamt Calendar-Endtag schreiben.
+close ($quelle_fh);
+
+print $ziel_fh "END:VCALENDAR\n"; # Gesamt Calendar-Endtag schreiben.
+close ($ziel_fh);
 
 print "\n";
 print "$header_datei\n";
@@ -142,5 +145,4 @@ print "$quell_datei\n";
 print "$ziel_datei\n";
 
 print "\n$i Datensaetze selektiert.\n";
-close (QUELLE);
-close (ZIEL);
+1;
