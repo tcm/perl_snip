@@ -10,6 +10,7 @@
 # geaendert: 14.04.2010
 ################################################
 
+use strict;
 use DBI;                # Das DBI-Modul laden
 use POSIX qw(strftime);
 
@@ -38,6 +39,7 @@ my $str_statustext_scr;     # Rueckmeldung der Stored Procedure
 my $str_dummy;
 my $bool_holdon_error;
 my $clear = `clear`;
+my $sqlstring;
 
 ### Datenbankverbindungsparameter.
 my $dbhost= "vm-suse10-3-2";
@@ -205,7 +207,7 @@ while (1) {                 # Die grosse Aussenschleife.
    # Rueckgabewert auslesen, und entsprechend
    # den Statustext zuweisen.
    ##################################################
-   @row =$sth->fetchrow_array;  # Geht ausnahmsweise, da wir immer nur 
+   my @row =$sth->fetchrow_array;  # Geht ausnahmsweise, da wir immer nur 
                                 # einen Datensatz erhalten werden!
   
 

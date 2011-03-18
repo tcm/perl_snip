@@ -1,7 +1,8 @@
+#!/usr/bin/perl
 use strict;
 
 
-my @all_files = <c:\\winnt\\*>;
+my @all_files = glob 'c:\\winnt\\*';
 my $i;
 my $dpath = "c:\\ftproot2\\";
 
@@ -11,6 +12,6 @@ foreach my $file (@all_files) {
 	$file =~ s#.*\\##;
 	print "$file\n";
 
-	open(OUT, ">$dpath$file");
-	close(OUT);
+	open my $fh_out, '>', $dpath.$file;
+	close($fh_out);
 }

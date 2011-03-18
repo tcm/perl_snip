@@ -7,6 +7,7 @@
 # Version ohne strikte Plausibilitaetspruefung
 ##############################################
 
+use strict;
 use DBI;
 
 my $version = "0.99";
@@ -47,6 +48,9 @@ my $str_menge;
 my $bool_holdon_error;
 my $str_statustext_scr;
 my $str_ausgabezeile_scr;
+
+my $int_rueckgabewert;
+my $str_dummy;
 
 # Fehlerkonstanten.
 my $C_MENGE_NULL = 8;
