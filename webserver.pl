@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+use strict; 
+
  {
  package MyWebServer;
  
