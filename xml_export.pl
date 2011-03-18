@@ -24,7 +24,7 @@ my $sth = $dbh->prepare($str_sql);
 $sth->execute();
 
 my $output = new IO::File(">output_writer.xml");
-my $writer = new XML::Writer(OUTPUT => $output, DATA_MODE => 1, IDENT_MODe => 1);
+my $writer = new XML::Writer(OUTPUT => $output, DATA_MODE => 1, IDENT_MODE => 1);
 
 
 $writer->xmlDecl('ISO-8859-1','yes');
@@ -68,7 +68,7 @@ sub remove_newline {
   my $str_new;
   
   # Wir filten die Zeilenschaltung aus  String.
-  foreach $byte  (split(//, $_[0])) {
+  foreach my $byte  (split(//, $_[0])) {
    	# print $byte;
    	$byte = "-" if ($byte eq chr(10));
    	$byte = "<" if ($byte eq chr(13));
