@@ -28,7 +28,7 @@ if (defined $opts{i}) {
 my $path1 = "/vmfs/volumes/storage1";
 my $path2 = "/backup/vmware";
 
-my @arr1 = <$path1/$host_dir/*.vmdk>;
+my @arr1 = glob '$path1/$host_dir/*.vmdk';
 my @arr2;
 my @arr3;
 
@@ -52,14 +52,14 @@ if (@arr1) {
 # Open output-file
 #
 my $outfile = $host_dir.".sh";
-open (SHELLFILE, ">$outfile") or
+open my $fh_shellfile, '>', $outfile or
 	die "$outfile konnte nicht angelegt werden.\n";
 
 #
 #  copy all relevant
 #  vmdk-files to
 #  arr2.
-foreach $file (@arr1) {
+foreach my $file (@arr1) {
 	$file = basename($file);
 	
 	if ($file =~ /-flat/) {
@@ -76,7 +76,7 @@ print "\n";
 #
 # copy only vmdk-Files with 6 digits
 # before a point in arr3. 
-foreach $file (@arr2) {
+foreach my $file (@arr2) {
 	if ($file =~ /\d{6}\./) {
                 push (@arr3, $file);	
 	}
@@ -88,22 +88,22 @@ print "\n";
 # create shell-commands.
 print "\n";
 print "#!/bin/bash\n";
-print SHELLFILE "#!/bin/bash\n";
+print $fh_shellfile "#!/bin/bash\n";
 print "IN=$source_dir\n";
-print SHELLFILE "IN=$source_dir\n";
+print $fh_shellfile "IN=$source_dir\n";
 print "OUT=$dest_dir\n\n";
-print SHELLFILE "OUT=$dest_dir\n\n";
+print $fh_shellfile "OUT=$dest_dir\n\n";
 
 print "vmware-cmd  \$IN/$host_dir.vmx stop\n"; 
-print SHELLFILE "vmware-cmd  \$IN/$host_dir.vmx stop\n"; 
+print $fh_shellfile "vmware-cmd  \$IN/$host_dir.vmx stop\n"; 
 print "sleep 30\n\n"; 
-print SHELLFILE "sleep 30\n\n"; 
+print $fh_shellfile "sleep 30\n\n"; 
 
 print "rm -v \$OUT/*\n";
-print SHELLFILE "rm -v \$OUT/*\n";
+print $fh_shellfile "rm -v \$OUT/*\n";
 
 print "cp -v \$IN/$host_dir.vmx \$OUT\n";
-print SHELLFILE "cp -v \$IN/$host_dir.vmx \$OUT\n";
+print $fh_shellfile "cp -v \$IN/$host_dir.vmx \$OUT\n";
 
 # create dest-dir if it does not exist.
 if ( !(-e $dest_dir)) {
@@ -119,10 +119,10 @@ if ($n == 0) {
 
 	
 	# create commands.
-	foreach $file (@arr2) {
+	foreach my $file (@arr2) {
 		
 		print "vmkfstools -i \$IN/$file -d 2gbsparse \$OUT/$file\n";
-		print SHELLFILE "vmkfstools -i \$IN/$file -d 2gbsparse \$OUT/$file\n";
+		print $fh_shellfile "vmkfstools -i \$IN/$file -d 2gbsparse \$OUT/$file\n";
 	}	
 } else {
  #
@@ -132,7 +132,7 @@ if ($n == 0) {
  	
 	my %hash1;
  	
-	foreach $file ( sort @arr3) {
+	foreach my $file ( sort @arr3) {
 		
 	        #
 		# last point, last minus
@@ -160,17 +160,17 @@ if ($n == 0) {
 	foreach my $key (keys %hash1) {
 		# print "$key -> $hash1{$key}\n";
 		print "vmkfstools -i \$IN/$key-$hash1{$key}.vmdk -d 2gbsparse \$OUT/$key.vmdk\n";
-		print SHELLFILE "vmkfstools -i \$IN/$key-$hash1{$key}.vmdk -d 2gbsparse \$OUT/$key.vmdk\n";
+		print $fh_shellfile "vmkfstools -i \$IN/$key-$hash1{$key}.vmdk -d 2gbsparse \$OUT/$key.vmdk\n";
 	}
 
 }
 
 
 print "\nvmware-cmd  \$IN/$host_dir.vmx start\n\n"; 
-print SHELLFILE "\nvmware-cmd  \$IN/$host_dir.vmx start\n\n"; 
+print $fh_shellfile "\nvmware-cmd  \$IN/$host_dir.vmx start\n\n"; 
 
 
-close(SHELLFILE);
+close($fh_shellfile);
 chmod(0755,$outfile);
 
 
