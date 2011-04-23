@@ -1,0 +1,2 @@
+h2xs AX -n IEPM::PingER
+perl Makefile.PL; make; make dist;
