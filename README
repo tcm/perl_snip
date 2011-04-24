@@ -27,3 +27,7 @@ menue.pl - Print-Queues per Menue reinigen.
 ua.pl - Automatisch einen Benutzer mit Passwort anlegen.
 
 webserver.pl - Dienst unter Windows per Webpage neu starten.
+
+perl_module - Grundgerüst für Module
+
+template - Einfache Templates
