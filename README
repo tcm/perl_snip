@@ -28,6 +28,8 @@ ua.pl - Automatisch einen Benutzer mit Passwort anlegen.
 
 webserver.pl - Dienst unter Windows per Webpage neu starten.
 
+parse_dhcpd_leases.pl - Schönere Anzeige, der Client-Leases.
+
 perl_module - Grundgerüst für Module
 
 template - Einfache Templates

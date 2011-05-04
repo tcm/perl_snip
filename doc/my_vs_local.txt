@@ -1,0 +1,10 @@
+1) My
+My creates a new variable and gives a lexical scope for that variable.The variable is not visible outside the block in which it is defined.
+
+2) Local
+
+Local saves the value of a global variable.It never creates a new variable. Here also the variable is not accessible outside the block but it is visible in the subroutine which is called from the original block. My is more preferring than local. But in various places local is useful where my is illegal
+
+1) Changing the meaning of a special variable like $/
+2) Localized file handles
+3) Globing
