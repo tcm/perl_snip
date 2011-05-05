@@ -1,12 +1,16 @@
-[%  INCLUDE header.tt
-      title = 'This is an HTML example';
+[% INCLUDE header.tt
+   title = 'Template Toolkit CGI Test'
 %]
 
-   <h1>Some Interesting Links</h1>
-   <ul>
-[%  FOREACH page IN pages %]
-     <li><a href="[% page.url %]">[% page.title %]</a>
-[%  END %]
-   </ul>
+<a href="mailto:[% email %]">Email [% me.name %]</a>
+
+<p>This is version [% version %]</p>
+
+<h3>Projects</h3>
+<ul>
+[% FOREACH project IN worklist(me.id) %]
+   <li> <a href="[% project.url %]">[% project.name %]</a>
+[% END %]
+</ul>
 
 [% INCLUDE footer.tt %]
