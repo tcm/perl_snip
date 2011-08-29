@@ -194,7 +194,7 @@ sub gen_html {
 	my $file = 'html.tt';
 	my $vars = {
 	    'version' => 0.9,
-	    'email' => "edv\@pass-ag.com",
+	    'email' => "blub\@domain.com",
 	    'recordset' => $recordset_ref,
 	    'cgi' => CGI->new()
 	   

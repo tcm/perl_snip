@@ -34,7 +34,7 @@ if (defined $opts{i}) {
 }
 
 #########################################
-# Files aus XML-Konformitaet pruefen.
+# Files auf XML-Konformitaet pruefen.
 #########################################
 my $parser = XML::LibXML->new();
 
