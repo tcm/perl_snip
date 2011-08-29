@@ -1,0 +1,16 @@
+[% INCLUDE header.tt
+   title = 'Hinventory Anwendungsreport'
+%]
+
+<a href="mailto:[% email %]">Email [% me.name %]</a>
+
+<p>This is version [% version %]</p>
+
+<h3>Installierte Applikationen</h3>
+<ul>
+[% FOREACH row IN recordset(me.id) %]
+   <li> <a href="[% row.count %]">[% row.filename %] [% row.name %] [% row.createtime %]</a>
+[% END %]
+</ul>
+
+[% INCLUDE footer.tt %]
