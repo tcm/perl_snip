@@ -18,6 +18,7 @@ parse_dhcpd_leases.pl - Schönere Anzeige, der Client-Leases.
 ============================================================
 lager- Routinen für Lagerbuchungen mit dem Funkbarcodeleser.
 ldp - Hilfsroutinen zum reinigen von Print-Queues.
+hinventory - Hilfsroutinen für hinventory
 moose - Objektbeispiele mit Moose.
 perl_module - Grundgerüst für Module.
 template - Einfache Templates mit dem Template-Toolkit.
