@@ -1,4 +1,6 @@
+#!/usr/bin/perl
 ############################################################
+#!/usr/bin/perl
 # hinventory mit LibXML und XPATH filtern.
 # Ausgabe mit dem Template Toolkit.
 # (jb) 2011
