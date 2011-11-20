@@ -1,0 +1,1 @@
+sqlite3 testdata.db  "CREATE TABLE t1(id INTEGER PRIMARY KEY, f1 TEXT, f2 INTEGER);"
