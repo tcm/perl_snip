@@ -8,6 +8,7 @@ use XML::LibXML;
 use Path::Class;
 use Template;
 # Standard-Module
+use Carp 'croak';
 use File::Basename;
 use File::Glob ':glob';
 use FindBin '$Bin';
@@ -38,6 +39,10 @@ our %EXPORT_TAGS = ( Functions => [ qw(hinventory_gen_recordset hinventory_gen_h
 ###########################################################
 sub hinventory_gen_recordset 
 {
+
+   croak "4 Argumente erwartet aber " . @_." erhalten."
+   unless @_ == 4;
+
    my ($AOH_ref, $str_type, $str_name, $str_path) = @_;
 
    my $n1 = 0; # Zähler für alle Files.
@@ -99,6 +104,9 @@ sub hinventory_gen_recordset
 ###########################################################
 sub hinventory_gen_html 
 {
+   croak "1 Argument erwartet aber " . @_." erhalten."
+   unless @_ == 1;
+
    my $recordset_ref = shift;
 
    $| = 1;
@@ -131,6 +139,9 @@ sub hinventory_gen_html
 ###########################################################
 sub hinventory_print_recordset 
 {
+   croak "1 Argument erwartet aber " . @_." erhalten."
+   unless @_ == 1;
+
    my $recordset_ref = shift;
 
    # print Dumper $recordset_ref;	

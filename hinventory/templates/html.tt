@@ -1,16 +1,75 @@
 [% INCLUDE header.tt
-   title = 'Hinventory Anwendungsreport'
+   title = 'Inventarsystem Berichte'
 %]
 
-<a href="mailto:[% email %]">Email [% me.name %]</a>
+<div id="container">
 
-<p>This is version [% version %]</p>
+	<div id="header">
+		<h1>
+			Inventarsystem
+		</h1>
+	</div>
 
-<h3>Installierte Applikationen</h3>
-<ul>
-[% FOREACH row IN recordset(me.id) %]
-   <li> <a href="[% row.count %]">[% row.filename %] [% row.name %] [% row.createtime %]</a>
-[% END %]
-</ul>
+	<div id="navigation">
+		<ul>
+			<li><a href="#">Home</a></li>
+			<li><a href="#">Über</a></li>
+			<li><a href="#">Systemübersicht</a></li>
+			<li><a href="#">Kontakt</a></li>
+		</ul>
+	</div>
+
+<div id="content">
+		<h2>
+			Bericht pro Applikation
+		</h2>
+		<p>
+		  Blah vorher...
+		</p>
+		<p>
+
+		<table>
+
+		<!-- Tabellenkopf -->
+		<thead>
+ 		<tr>
+	    	<th scope="col">count</th>
+    		<th scope="col">filename</th>
+    		<th scope="col">name</th>
+    		<th scope="col">createtime</th>	
+  		</tr>
+                </thead>
+               
+		<!-- Tabellenfuss -->
+		<tfoot>
+		<tr>
+		<th scope="row">Total</th><td colspan="4">xx Zeilen</td>
+		</tr>
+		</tfoot>
+ 
+		<!-- Tabelleninhalt -->
+		<tbody>
+		[% FOREACH row IN recordset(me.id) %]
+		[% IF row.count % 2 %]
+		   <tr>
+                [% ELSE %]
+	           <tr class="odd">
+                [% END %]     
+			  <td scope="row" id="[% row.count %]">[% row.count %]</td>
+    			  <td>[% row.filename %]</td>
+    			  <td>[% row.name %]</td>	
+    			  <td>[% row.createtime %]</td> 
+    		   </tr>
+		[% END %]
+                </tbody>
+
+		</table>
+
+		</p>
+
+		<p>
+		   Blah nachher....
+		</p>
+</div>
 
 [% INCLUDE footer.tt %]
