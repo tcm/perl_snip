@@ -58,7 +58,6 @@ sub launch_sql_queries
     my $sec = int(rand(10))+1;
     sleep($sec); 
     print strftime('[%H:%M:%S] ', localtime);
-    sleep($sec); 
     print "thread $num delay($sec)\n";
 
     ###########################
