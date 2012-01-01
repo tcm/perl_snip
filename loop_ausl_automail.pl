@@ -115,7 +115,7 @@ $work_dir = "/root/scripts/automail";
 		# Dateien per Email wegschicken.
 		##################################################
 		if ( -s $transfer_file ) {
-	         system("cat $transfer_file | mail -s \'Auslieferungen PASS Stanztechnik AG\' $key");
+	         system("cat $transfer_file | mail -s \'Auslieferungen Enterprises AG\' $key");
 	         #system("cat $transfer_file | mail -s \'Auslieferungen PASS Stanztechnik AG\' $email_alias");
 		} else {
     	     print ("$transfer_file existiert nicht oder hat 0 Bytes\n");
