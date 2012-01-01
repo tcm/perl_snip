@@ -1,5 +1,11 @@
 #!/usr/bin/perl -w 
 
+##################################
+# XML-File aus einer SQL-Server
+# Tabelle mit MEMO-Feld erzeugen.
+##################################
+
+
 use strict;
 use DBI;
 use Data::Dumper;
@@ -16,7 +22,7 @@ my $int_pos = 0;
 ############################################################################################
 # Verbindung zur Datenbank herstellen.
 ############################################################################################
-my $dbh = DBI->connect( "dbi:Sybase:server=server2000", 'user', 'password',
+my $dbh = DBI->connect( "dbi:Sybase:server=sqlserver", 'user', 'password',
 	{ PrintError => 0 } )
   or die "Unable for connect to server $DBI::errstr";
 
