@@ -72,7 +72,7 @@ sub gen_computer_txt_ad
    ####################################################
    # Die Ausgabe für das Kommando 'dsquery' auslesen.
    ####################################################
-   open my $readme_fh , "dsquery computer -limit 500 |" || die "Fehler bei fork: $!\n";
+   open my $readme_fh , "|-" ,"dsquery computer -limit 500" || die "Fehler bei fork: $!\n";
    while (<$readme_fh>) 
    {
       my ($cn_1,$cn_2,$cn_3,$cn_4) = split(/,/);                                       # Splitting in einzelne CN-Strings.
