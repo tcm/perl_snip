@@ -3,18 +3,18 @@ esxbackup.pl - Erzeugt ein bash-Script mit dem sich die virtuellen Maschinen auf
 filter_ics.pl - Extrahiert Termine aus einem ics-File nach Jahr, Urlaub usw.
 
 proe_to_database.pl - Schreibt Werte aus einem mit Proe erzeugten XML-File in eine Datenbank.
-xml_export.pl - Export von Daten (MEMO-Felder) aus einer  MS-Sqlserver-Datenbank nach XML.
 fping_unix10.pl - Rechner anpingen und bei Bedarf eine SMS verschicken.
-
-barcode.pl - Script fuer Buchungen in ein Lager.
 fping_unix10.pl - SMS-Benachrichtigungen bei Nichterreichbarkeit.
-helper_check_valid_email.pl - Datenbankfeld auf gültige Email-Adresse prüfen.
 
+helper_check_valid_email.pl - Datenbankfeld auf gültige Email-Adresse prüfen.
 loop_ausl_email.pl - Benachrichtigungs-Email bei einer Auslieferung.
 ua.pl - Automatisch einen Benutzer mit Passwort anlegen.
-webserver.pl - Dienst unter Windows per Webpage neu starten.
 
+webserver.pl - Dienst unter Windows per Webpage neu starten.
 parse_dhcpd_leases.pl - Schönere Anzeige, der Client-Leases.
+monitor_firebird_connection.pl - Datenbank-Service monitoren.
+
+sqlserver_length_check.pl - Laenge von MEMO-Feldern prüfen.
 ============================================================
 lager- Routinen für Lagerbuchungen mit dem Funkbarcodeleser.
 ldp - Hilfsroutinen zum reinigen von Print-Queues.
@@ -22,3 +22,8 @@ hinventory - Hilfsroutinen für hinventory
 moose - Objektbeispiele mit Moose.
 perl_module - Grundgerüst für Module.
 template - Einfache Templates mit dem Template-Toolkit.
+xml - Routinen die den Umgang mit XML zeigen.
+doc - Dokumentationen.
+threads - Threads in Perl.
+threads_sql - Threads in Verbindung mit SQL-Abfragen.
+sms - SMS-Benachrichtigungen per REST-API.
