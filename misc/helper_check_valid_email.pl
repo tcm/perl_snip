@@ -6,11 +6,13 @@
 # (jb) April 2009
 ####################################################
 
+use strict;
+use warnings;
 use DBI;
 
 
-$str_user = 'user1';
-$str_password = 'xxxxxxxxxxxxxxx';
+my $str_user = 'user1';
+my $str_password = 'xxxxxxxxxxxxxxx';
 
 	###############################################
 	# Zur Datenbank verbinden.
@@ -22,6 +24,8 @@ $str_password = 'xxxxxxxxxxxxxxx';
 	###############################################
 	# SQL-String festlegen und ausfuehren.
 	################################################
+	my $sql;
+        my $sth;
 	$sql = "use PASS;";
 	print ("SQL-Kommando fuer SQL-Server:    $sql\n");
 
