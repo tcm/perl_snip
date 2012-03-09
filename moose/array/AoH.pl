@@ -32,14 +32,35 @@ package Row;
 my $recordset_ref= [];
 
 my $r_obj = Row->new;
-
 $r_obj->options(["count" => 1, "name" => "foo"]);
 push(@{ $recordset_ref },  $r_obj );
 
+$r_obj =undef;
+$r_obj = Row->new;
 $r_obj->options(["count" => 2, "name" => "bar"]);
 push(@{ $recordset_ref },  $r_obj );
 
-print Dumper $recordset_ref;
+
+
+foreach my $rec ( @{ $recordset_ref }  )
+{
+       printf "%3d  %15s\n",
+       $rec->{'count'},
+       $rec->{'name'};
+}
+
+
+
+
+
+
+ 
+#print Dumper $recordset_ref;
+
+
+
+
+
 #my $count = $r_obj->count_options;
 #print "$count\n"; # prints 4
 
