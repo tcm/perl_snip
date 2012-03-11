@@ -13,27 +13,22 @@ use Path::Class;
 use Template;
 # Standard-Module
 use Carp 'croak';
-
 use File::Basename;
 use File::Copy;
 use File::Glob ':glob';
 use FindBin '$Bin';
 use File::stat;
-
 use CGI;
 use POSIX qw( strftime );
 
-#use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
-
-#require Exporter;
-
-#our $VERSION = 0.1;
-#our @ISA = qw(Exporter);
-#our @EXPORT = qw(gen_computer_txt_ad  gen_computer_txt_ad_diff);
-#our @EXPORT_OK = qw(gen_computer_txt_ad  gen_computer_txt_ad_diff);
-#our %EXPORT_TAGS = ( Functions => [ qw(gen_computer_txt_ad  gen_computer_txt_ad_diff) ] );
-
-
+# Funktionen exportieren. 
+use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
+require Exporter;
+our $VERSION = 0.2;
+our @ISA = qw(Exporter);
+our @EXPORT = qw(gen_computer_txt_ad  gen_computer_txt_ad_diff);
+our @EXPORT_OK = qw(gen_computer_txt_ad  gen_computer_txt_ad_diff);
+our %EXPORT_TAGS = ( Functions => [ qw(gen_computer_txt_ad  gen_computer_txt_ad_diff) ] );
 
 ###########################################################
 #  computer.txt erzeugen.
@@ -72,7 +67,7 @@ sub gen_computer_txt_ad
    ####################################################
    # Die Ausgabe für das Kommando 'dsquery' auslesen.
    ####################################################
-   open my $readme_fh , "|-" ,"dsquery computer -limit 500" || die "Fehler bei fork: $!\n";
+   open my $readme_fh , "-|" ,"dsquery computer -limit 500" || die "Fehler bei fork: $!\n";
    while (<$readme_fh>) 
    {
       my ($cn_1,$cn_2,$cn_3,$cn_4) = split(/,/);                                       # Splitting in einzelne CN-Strings.
