@@ -26,9 +26,9 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 require Exporter;
 our $VERSION = 0.1;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset gen_computer_txt_ad  gen_computer_txt_ad_diff);
-our @EXPORT_OK = qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset gen_computer_txt_ad  gen_computer_txt_ad_diff);
-our %EXPORT_TAGS = ( Functions => [ qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset gen_computer_txt_ad  gen_computer_txt_ad_diff) ] );
+our @EXPORT = qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset );
+our @EXPORT_OK = qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset );
+our %EXPORT_TAGS = ( Functions => [ qw(hinventory_gen_recordset hinventory_gen_html hinventory_print_recordset ) ] );
 
 sub set_type 
 {
