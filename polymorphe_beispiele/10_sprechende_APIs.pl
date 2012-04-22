@@ -12,6 +12,10 @@ my $object = Toolbox->new({ HEFT => 5,
                             TITEL => 'Das Werkzeug...',
                             LEVEL => 'Wizard'});
 
+
+say $object;
+
+
 package Toolbox;
 
 # Constructor

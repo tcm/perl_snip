@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w 
-# Listing 
+# Listing 4 
 # aus Toolbox 5/2009
 #
 use strict;
