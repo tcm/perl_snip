@@ -1,0 +1,7 @@
+Versuch, um die Verschiedenen Möglichkeiten zu ergründen,
+wie man mit Perl effektiv reinen Text in seine Bestandteile zerlegt.
+
+- textparser.pl  Erster eigener Lösungsansatz.
+- textparser_2.pl  Lösungsansatz aus dem Perl-Kochbuch.
+- textparser_3.pl  Speichern des Hash mit dem Storable-Moduls.
+- textparser_4.pl  Speichern des Hash in einer SQLite-Datenbank.
