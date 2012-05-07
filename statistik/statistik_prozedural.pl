@@ -12,11 +12,17 @@ use List::Util qw(sum);
 
 my @arr1 = (1,1,1,2,3,4,5,5,5,6,6);
 my @arr2 = (1,1,1,2,3,4,5,5,5,6,6,7);
+my @arr3 = (1.2,1.25,0.667);
 
 print &arith_avg( \@arr1 )."\n";
 
 print &median( \@arr1 )."\n";
 print &median( \@arr2 )."\n";
+
+print &graph_avg( \@arr3 )."\n";
+
+
+
 
 
 # Arithmetisches Mittel
@@ -56,3 +62,20 @@ sub median
    return $wert;
    } 
 }
+
+# Graphisches Mittel
+#
+# Parameter: Referenz auf das Array
+sub graph_avg
+{
+   my $array_ref = shift;
+   my $produkt = 1;
+      
+   my $anzahl =  scalar @{ $array_ref }; # Anzahl der Elemente bestimmen.
+   foreach my $element ( @$array_ref )   # Alle Elemente miteiander multiplizieren.
+   {
+      $produkt *= $element;    
+   }
+   return $produkt ** (1/$anzahl);
+}
+
