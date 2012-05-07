@@ -72,7 +72,7 @@ sub graph_avg
    my $produkt = 1;
       
    my $anzahl =  scalar @{ $array_ref }; # Anzahl der Elemente bestimmen.
-   foreach my $element ( @$array_ref )   # Alle Elemente miteiander multiplizieren.
+   foreach my $element ( @$array_ref )   # Alle Elemente miteinander multiplizieren.
    {
       $produkt *= $element;    
    }
