@@ -22,6 +22,9 @@ say $object->median(\@arr2);
 say $object->graph_avg(\@arr3); 
 
 
+$object->generate_csv_file("test.txt"); 
+
+
 package Avg;
 use List::Util qw(sum);
 
@@ -98,4 +101,34 @@ sub graph_avg
       $produkt *= $element;
    }
    return $produkt ** (1/$anzahl);
+}
+
+# Liste mit Zufallszahlen
+# in File schreiben.
+#
+sub generate_csv_file
+{
+   my $self = shift;
+   my $filename = shift;
+   my $zeile = 0;
+   my $spalte = 0;
+
+   open my $ziel_fh, '>', $filename || die "$filename konnte nicht geoeffnet werden.\n";
+
+   foreach(1 .. 100000)
+   {
+      $zeile++;
+      foreach (1 .. 20 )
+      {
+         $spalte++;
+         my $zahl=int(rand(1000)+1);                     # Zufallszahl ermitteln.
+         print $ziel_fh "$zahl";
+         if ($spalte % 20) { print $ziel_fh "," };    # Letztes Komma unterdrücken.
+      }
+      
+      print $ziel_fh "\n";
+      $spalte = 0;
+   }
+
+   close $ziel_fh;
 }
