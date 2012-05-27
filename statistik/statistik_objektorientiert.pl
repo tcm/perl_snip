@@ -7,12 +7,17 @@ use strict;
 use warnings;
 use feature ':5.10';
 
-
 my @arr1 = (1,1,1,2,3,4,5,5,5,6,6);
 my @arr2 = (1,1,1,2,3,4,5,5,5,6,6,7);
 my @arr3 = (1.2,1.25,0.667);
+my @arr4 = ();
 
 my $object = Avg->new();
+
+###############################
+# Berechnen.
+# 
+###############################
 say $object->arith_avg(\@arr1); 
 
 say $object->median(\@arr1); 
@@ -22,7 +27,24 @@ say $object->median(\@arr2);
 say $object->graph_avg(\@arr3); 
 
 
+print "\n";
+
+################################
+# Berechnen aus File.
+#
+################################
+# CVS-File schreiben.
 $object->generate_csv_file("test.txt"); 
+
+# CVS-File lesen.
+$object->read_csv_file("test.txt",\@arr4); 
+# foreach ( @arr4 ){ print "$_\n"; }
+
+say $object->arith_avg(\@arr4);
+
+
+my @sorted = sort {$a <=> $b} @arr4;
+say $object->median(\@sorted);
 
 
 package Avg;
@@ -105,7 +127,6 @@ sub graph_avg
 
 # Liste mit Zufallszahlen
 # in File schreiben.
-#
 sub generate_csv_file
 {
    my $self = shift;
@@ -123,7 +144,7 @@ sub generate_csv_file
          $spalte++;
          my $zahl=int(rand(1000)+1);                     # Zufallszahl ermitteln.
          print $ziel_fh "$zahl";
-         if ($spalte % 20) { print $ziel_fh "," };    # Letztes Komma unterdrücken.
+         if ($spalte % 20) { print $ziel_fh "," };       # Letztes Komma unterdrücken.
       }
       
       print $ziel_fh "\n";
@@ -131,4 +152,22 @@ sub generate_csv_file
    }
 
    close $ziel_fh;
+}
+
+# Liste mit Zufallszahlen
+# aus File lesen.
+sub read_csv_file
+{
+   my $self = shift;
+   my $filename = shift;
+   my $array_ref = shift;
+
+   open my $quell_fh, '<', $filename || die "$filename konnte nicht geoeffnet werden.\n";
+   while( <$quell_fh> ) 
+   {
+      chomp;
+      push(@$array_ref, split(/,/) );
+   }
+
+   close $quell_fh;
 }
