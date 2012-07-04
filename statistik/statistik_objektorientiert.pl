@@ -6,10 +6,11 @@
 use strict;
 use warnings;
 use feature ':5.10';
+use sort '_mergesort';
 
-my @arr1 = (1,1,1,2,3,4,5,5,5,6,6);
-my @arr2 = (1,1,1,2,3,4,5,5,5,6,6,7);
-my @arr3 = (1.2,1.25,0.667);
+#my @arr1 = (1,1,1,2,3,4,5,5,5,6,6);
+#my @arr2 = (1,1,1,2,3,4,5,5,5,6,6,7);
+#my @arr3 = (1.2,1.25,0.667);
 my @arr4 = ();
 
 my $object = Avg->new();
@@ -18,37 +19,40 @@ my $object = Avg->new();
 # Berechnen.
 # 
 ###############################
-say $object->arith_avg(\@arr1); 
+#say $object->arith_avg(\@arr1); 
 
-say $object->median(\@arr1); 
-say $object->median(\@arr2); 
-
-
-say $object->graph_avg(\@arr3); 
+#say $object->median(\@arr1); 
+#say $object->median(\@arr2); 
 
 
-print "\n";
+#say $object->graph_avg(\@arr3); 
+
+
+#print "\n";
 
 ################################
 # Berechnen aus File.
 #
 ################################
 # CVS-File schreiben.
-$object->generate_csv_file("test.txt"); 
+#$object->generate_csv_file("test.txt"); 
 
 # CVS-File lesen.
+say "Reading CSV-File.....";
 $object->read_csv_file("test.txt",\@arr4); 
 # foreach ( @arr4 ){ print "$_\n"; }
 
-say $object->arith_avg(\@arr4);
+#say "Calculating arith. Average.....";
+#say $object->arith_avg(\@arr4);
 
 
+say "Sorting Array.....";
 my @sorted = sort {$a <=> $b} @arr4;
+say "Calculating Median.....";
 say $object->median(\@sorted);
 
 
 package Avg;
-use List::Util qw(sum);
 
 # Constructor
 sub new 
@@ -73,10 +77,12 @@ sub arith_avg
 {
    my $self = shift;
    my $array_ref = shift;
+   
  
    my $anzahl =  scalar @{ $array_ref }; # Anzahl der Elemente bestimmen.
    #say $anzahl;
-   my $summe = sum (@$array_ref);          # Aufsummieren.
+   my $summe = 0;
+   foreach (@$array_ref) { $summe += $_ };          # Aufsummieren.
    return $summe / $anzahl;
 }
 
@@ -136,13 +142,13 @@ sub generate_csv_file
 
    open my $ziel_fh, '>', $filename || die "$filename konnte nicht geoeffnet werden.\n";
 
-   foreach(1 .. 100000)
+   foreach(1 .. 1000000)
    {
       $zeile++;
       foreach (1 .. 20 )
       {
          $spalte++;
-         my $zahl=int(rand(1000)+1);                     # Zufallszahl ermitteln.
+         my $zahl = int( rand(1000) + 1 );                     # Zufallszahl ermitteln.
          print $ziel_fh "$zahl";
          if ($spalte % 20) { print $ziel_fh "," };       # Letztes Komma unterdrücken.
       }
