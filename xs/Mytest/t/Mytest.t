@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 9;
 BEGIN { use_ok('Mytest') };
 
 #########################
@@ -17,4 +17,11 @@ BEGIN { use_ok('Mytest') };
 # its man page ( perldoc Test::More ) for help writing this test script.
 is(&Mytest::is_even(0), 1);
 is(&Mytest::is_even(1), 0);
-is(&Mytest::is_even(2), 1)
+is(&Mytest::is_even(2), 1);
+
+my $i;
+$i = -1.5; &Mytest::round($i); is( $i, -2.0 );
+$i = -1.1; &Mytest::round($i); is( $i, -1.0 );
+$i = 0.0; &Mytest::round($i); is( $i, 0.0 );
+$i = 0.5; &Mytest::round($i); is( $i, 1.0 );
+$i = 1.2; &Mytest::round($i); is( $i, 1.0 );

@@ -17,7 +17,7 @@
 #     CONFIGURE_REQUIRES => {  }
 #     DEFINE => q[]
 #     INC => q[]
-#     LIBS => [q[]]
+#     LIBS => [q[-lm]]
 #     NAME => q[Mytest]
 #     PREREQ_PM => {  }
 #     VERSION_FROM => q[lib/Mytest.pm]
@@ -289,6 +289,9 @@ MPOLLUTE =
 # Mytest might depend on some other libraries:
 # See ExtUtils::Liblist for details
 #
+EXTRALIBS = 
+LDLOADLIBS = -lm
+BSLOADLIBS = 
 
 
 # --- MakeMaker const_cccmd section:

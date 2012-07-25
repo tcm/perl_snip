@@ -17,3 +17,16 @@ int is_even(input)
     RETVAL = (input % 2 == 0);
     OUTPUT:
     RETVAL
+
+void round(arg)
+    double arg
+    CODE:
+    if (arg > 0.0) {
+    arg = floor(arg + 0.5);
+    } else if (arg < 0.0) {
+    arg = ceil(arg - 0.5);
+    } else {
+    arg = 0.0;
+    }
+    OUTPUT:
+    arg
