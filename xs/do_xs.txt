@@ -1,0 +1,6 @@
+# h2xs -A -n Mytest
+
+(als root)
+# perl Makefile.PL 
+# make
+# make install
