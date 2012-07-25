@@ -8,11 +8,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More tests => 4;
 BEGIN { use_ok('Mytest') };
 
 #########################
 
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
-
+is(&Mytest::is_even(0), 1);
+is(&Mytest::is_even(1), 0);
+is(&Mytest::is_even(2), 1)

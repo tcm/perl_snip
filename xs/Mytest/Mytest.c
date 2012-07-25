@@ -86,6 +86,29 @@ XS(XS_Mytest_hello)
     XSRETURN_EMPTY;
 }
 
+
+XS(XS_Mytest_is_even); /* prototype to pass -Wmissing-prototypes */
+XS(XS_Mytest_is_even)
+{
+#ifdef dVAR
+    dVAR; dXSARGS;
+#else
+    dXSARGS;
+#endif
+    if (items != 1)
+       croak_xs_usage(cv,  "input");
+    {
+	int	input = (int)SvIV(ST(0));
+	int	RETVAL;
+	dXSTARG;
+#line 17 "Mytest.xs"
+    RETVAL = (input % 2 == 0);
+#line 107 "Mytest.c"
+	XSprePUSH; PUSHi((IV)RETVAL);
+    }
+    XSRETURN(1);
+}
+
 #ifdef __cplusplus
 extern "C"
 #endif
@@ -111,6 +134,7 @@ XS(boot_Mytest)
     XS_VERSION_BOOTCHECK ;
 
         newXS("Mytest::hello", XS_Mytest_hello, file);
+        newXS("Mytest::is_even", XS_Mytest_is_even, file);
 #if (PERL_REVISION == 5 && PERL_VERSION >= 9)
   if (PL_unitcheckav)
        call_list(PL_scopestack_ix, PL_unitcheckav);
