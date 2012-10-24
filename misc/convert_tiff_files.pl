@@ -10,57 +10,55 @@
 
 #@ARGV = qw(Z:\daten\daten\Bilddateien) unless @ARGV; # Hier steht unser zu durchsuchendes
                                                       # Verzeichnis.
-@ARGV = qw(c:\pictures\temp) unless @ARGV;            
+						      #
+@ARGV = qw(Z:\Bilddateien) unless @ARGV;              # Hier steht unser zu durchsuchendes
+# @ARGV = qw(D:\tiff_test) unless @ARGV;              # Hier steht unser zu durchsuchendes
+
+
+
 use File::Find;
-use Digest::SHA1;
+# use Digest::SHA1;
+# use feature qw/switch/; 
 
 my $ziel_datei = "tiff_sha1.txt";
 my $file_name;
 my $file;
-my $anzahl;
-my $without_compression;
+my $anzahl = 0;
+my $without_compression = 0;
+my $no_lzw = 0;
 
 sub show_all {
 
- $file_name = $File::Find::name;
+  $file_name = $File::Find::name;
  
- if ($file_name =~ /\.(TIF|tif)/) {                    # Unser(e) Suchmuster.
-	
-   open my $readme_fh , "-|" ,"identify -verbose $file_name" || die "Fehler bei fork: $!\n";
-   while (<$readme_fh>)
-   {
-      
-      # Ist das Bild noch nicht komprimiert?	  
-      if ( /Compression: None/ )
-      {
-      open(FILE, $file_name) or die "Can't open '$file_name': $!";
-      binmode(FILE);
+  if ($file_name =~ /\.(TIF|tif)/)  # Unser(e) Suchmuster.
+  {
+  $anzahl++;
+  #print "$anzahl.)   $file_name\n";
 
-      # Ein paar Infos in einer Textdatei ablegen,
-      # damit man weiß wo man war, falls das Script
-      # abbricht.
-      print $ziel_fh Digest::SHA1->new->addfile(*FILE)->hexdigest.", ";
-      print $ziel_fh $file_name.", ".$_; 
+  
+  open my $readme_fh , "-|" ,"identify -verbose \"$file_name\"" || die "Fehler bei fork: $!\n";
+  while (<$readme_fh>)
+  {
+     # Ist das Bild noch nicht komprimiert?
+     if ( /Compression: None/ ){  $no_lzw = 1; };
+  }
+  }
 
-      $without_compression++;
-
-      system("convert -compress lzw $file_name $file_name");
-
-      };
-
-   }
-   close($readme_fh);
-   $anzahl++;
- }
+  if ( $no_lzw == 1 ) 
+  { 
+  print "NO_LZW ==> $file_name\n"; 
+  system("convert -compress lzw \"$file_name\" \"$file_name\"");
+  $no_lzw = 0;
+  }
 }
 
 
 # Main :-)
-open $ziel_fh, '>', $ziel_datei || die "$ziel_datei konnte nicht geoeffnet werden.\n";
 
 find (\&show_all, @ARGV);
 
 print "Anzahl: $anzahl\n";
-print "Without Compression: $without_compression\n";
+#print "Without Compression: $without_compression\n";
 
-close $ziel_fh;
+close ($ziel_fh);
