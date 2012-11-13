@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+# Test comment.
 use strict;
 use HelperFunc;
 
