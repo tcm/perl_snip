@@ -2,18 +2,19 @@
 #
 # (jb) 29.10.2012
 
+#perl2exe_include "Path/Class/Entity.pm";
+
 use strict;
 use warnings;
 
 use File::Copy;
 use File::Find;
 use POSIX qw( strftime );
-#use Devel::Size qw(size total_size);
 use File::Path qw(make_path);
 use Path::Class;
 use Getopt::Std;
-#use Data::Dumper;
 use feature qw/switch/; 
+use Data::Dumper;
 
 my @candidates;           # Alle Dateien nach Suchmuster
 my @final;                # Alle Dateien nach Suchmuster und COUNT >1 
@@ -43,11 +44,11 @@ my $source_path;          # Quellpfad zum verschieben der Dateien.
 my $dest_path;            # Zielpfad zum verschieben der Dateien.
 my $n;                    # Anzahl der Schlüssel im Hash.
 my $timestamp;
-my $version="0.9";
+my $version="0.92";
 my %options;
 
 
-getopts('i:o:v',\%options);
+getopts('i:o:vd',\%options);
 
 if(defined $options{v})
 {	
@@ -71,8 +72,8 @@ $source_path=file($options{i});
 $dest_path=file($options{o});
 
 
-#print "Quellpfad: $source_path\n";
-#print "Zielpfad: $dest_path\n";
+print "Quellpfad: $source_path\n";
+print "Zielpfad: $dest_path\n";
 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp --  PASS_1: Find candidates.\n";
@@ -107,10 +108,21 @@ foreach my $matched_file (@candidates)
    my $datei = substr($matched_file, 0, rindex($matched_file, "."));
    if ( $file_anz{$datei} > 1 ) { push ( @final, $matched_file); };  
 }
+
+# show_hash(\%file_anz);
+# print "\n\n";
+# foreach my $row (@final)
+# {
+#    print "$row\n";
+# }
+
+
 @candidates = (); # Nicht benötige Datenstrukturen 
 %file_anz = ();   # löschen.
 
 $n = @final; print "$timestamp --  Anzahl: $n\n";
+
+
 
 ###############################
 # IV. Hash mit der höchsten
@@ -128,14 +140,44 @@ foreach my $matched_file (@final)
   
    ######################
    # Max-Bestimmung.
-   # (Max-1)-Bestimmung. 
    ######################     
    if(exists($suff_max{$datei}) < $num)
-   {
-   $suff_max_minus_one{$datei} = $suff_max{$datei}; 	   
+   {   
    $suff_max{$datei}=$num;
+
+   # print "---------------------\n";
+   # print "Datei: $datei    Num: $num\n";
+   # print "\n\nMAX:\n";
+   # show_hash(\%suff_max);
+   # my $taste = <STDIN>;
    }
 }
+
+foreach my $matched_file (@final)
+{
+   $num = substr($matched_file, rindex($matched_file, ".")+1, );
+   my $datei = substr($matched_file, 0, rindex($matched_file, "."));
+  
+   ######################
+   # (Max-1)-Bestimmung. 
+   ######################
+   if ($suff_max{$datei} != $num )
+   {
+   if(exists($suff_max_minus_one{$datei}) < $num)
+   {   
+   $suff_max_minus_one{$datei}=$num;
+
+   # print "---------------------\n";
+   # print "\n\nMAX_MINUS_ONE:\n";
+   # show_hash(\%suff_max_minus_one);
+   # my $taste = <STDIN>;
+   }
+   }
+}
+#print "\n\n";
+#show_hash(\%suff_max);
+#print "\n\n";
+#show_hash(\%suff_max_minus_one);
 
 ###########################
 # V. Version-Pattern 
@@ -170,14 +212,21 @@ while ( ($key,$value) = each %version_pattern )
                                                  # Zielpfad + Verzeichnisteil des Quell-Files.
 
    make_path("$dest_path_new");
-   print "Copy: ";  copy( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-   #print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
+   if(defined $options{d})
+   {
+   print "Dryrun: "; 
    print "$qfile\n";
+   }
+   else
+   {
+   #print "Copy: ";  copy( $qfile, $dest_path_new) or die "File-Operation failed: $!";
+   print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
+   print "$qfile\n";
+   }
    }
 
 }
 print "\n\nZiel: $dest_path\n";
-
 
 ##################
 # Unterprogramm:
@@ -246,7 +295,6 @@ sub construct_pattern
 
 }
 
-
 ###################
 # Unterprogramm:
 #
@@ -265,5 +313,3 @@ sub show_hash
    }
 
 }
-
-
