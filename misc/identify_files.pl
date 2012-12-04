@@ -1,6 +1,6 @@
 # Versionsbestimmung für Creo und Proe Wildfire.
 #
-# (jb) 29.10.2012
+# (jb) 28.11.2012
 
 #perl2exe_include "Path/Class/Entity.pm";
 
@@ -14,7 +14,7 @@ use File::Path qw(make_path);
 use Path::Class;
 use Getopt::Std;
 use feature qw/switch/; 
-use Data::Dumper;
+#use Data::Dumper;
 
 my @candidates;           # Alle Dateien nach Suchmuster
 my @final;                # Alle Dateien nach Suchmuster und COUNT >1 
@@ -44,11 +44,24 @@ my $source_path;          # Quellpfad zum verschieben der Dateien.
 my $dest_path;            # Zielpfad zum verschieben der Dateien.
 my $n;                    # Anzahl der Schlüssel im Hash.
 my $timestamp;
-my $version="0.92";
+my $version="0.93.1";
 my %options;
 
 
-getopts('i:o:vd',\%options);
+getopts('i:o:vdzh',\%options);
+
+if(defined $options{h})
+{	
+print "identify_files.exe  -i <Quellpfad> -o <Purgepfad> [-v][-d][-z][-h]\n";
+print "-v: Versionsnummer.\n";
+print "-i Zu durchsuchende Verzeichnisse.\n";
+print "-o: Verzeichnisse zu dem die Files verschoben werden.\n";
+print "-d: Dryrun zeigt nur an was passiert.\n";
+print "-z: Optimierungen einschalten.\n";
+print "-h: Hilfe.\n";
+exit 0;
+}
+
 
 if(defined $options{v})
 {	
@@ -59,12 +72,12 @@ print "---------------\n\n";
 
 if(!defined $options{i})
 {	
-die "Quellverzeichniss (option -i) muss angegeben werden.\n";
+die "Input-Path (option -i) muss angegeben werden. Hilfe mit -h\n";
 }
 
 if(!defined $options{o})
 {	
-die "Backupverzeichniss (option -o) muss angegeben werden.\n";
+die "Output-Path (option -o) muss angegeben werden. Hilfe mit -h\n";
 }
 
 
@@ -72,8 +85,8 @@ $source_path=file($options{i});
 $dest_path=file($options{o});
 
 
-print "Quellpfad: $source_path\n";
-print "Zielpfad: $dest_path\n";
+print "Input-Path: $source_path\n";
+print "Output-Path: $dest_path\n";
 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp --  PASS_1: Find candidates.\n";
@@ -120,7 +133,7 @@ foreach my $matched_file (@candidates)
 @candidates = (); # Nicht benötige Datenstrukturen 
 %file_anz = ();   # löschen.
 
-$n = @final; print "$timestamp --  Anzahl: $n\n";
+$n = @final; print "$timestamp --  Count \@final: $n\n";
 
 
 
@@ -132,7 +145,8 @@ $n = @final; print "$timestamp --  Anzahl: $n\n";
 # Endung pro Prefix erstellen.
 ###############################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
-print "$timestamp --  PASS_4: Create Hashes \%suff_max \%suff_max_minus_one.\n";
+print "$timestamp --  PASS_4: Create Hashes \%suff_max and \%suff_max_minus_one.\n";
+
 foreach my $matched_file (@final)
 {
    $num = substr($matched_file, rindex($matched_file, ".")+1, );
@@ -187,7 +201,43 @@ $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp --  PASS_5: Generate Version-Pattern.\n";
 
 print "$timestamp --  Process: Shorter Hash MAX.\n";
+$n = keys %suff_max; print "$timestamp --  Count \%suff_max: $n\n";
 construct_pattern(\%suff_max, \%version_pattern);
+
+#############################
+# Optimierung:
+# Wir gehen die Liste mit
+# den dem ersten Pattern durch.
+# Im Prinzip müssen wir
+# ja nur die Files betrachten,
+# die in der höchsten Version
+# mit Creo gezeichnet wurden.
+# Alle anderen löschen wir
+# aus den Hashes.
+#############################
+#print "\n\nVorher:\n";
+#show_hash(\%suff_max);
+#print "\n";
+#show_hash(\%version_pattern);
+
+if(defined $options{z})
+{
+$timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
+print "$timestamp --  Optimize: Shrink  Hashes MAX and MAX_MINUS_ONE.\n";
+while ( ($key,$value) = each %version_pattern ) 
+{
+    if ($value ne "C" ) 
+    {  
+    delete $suff_max{$key}; 
+    delete $suff_max_minus_one{$key}
+    }
+}
+$n = keys %suff_max_minus_one; print "$timestamp --  Count \%suff_max_minus_one: $n\n";
+}
+#print "\n\nNachher:\n";
+#show_hash(\%suff_max);
+#show_hash(\%suff_max_minus_one);
+
 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp --  Process: Shorter Hash MAX_MINUS_ONE.\n";
@@ -226,7 +276,8 @@ while ( ($key,$value) = each %version_pattern )
    }
 
 }
-print "\n\nZiel: $dest_path\n";
+print "\n\nDestination: $dest_path\n";
+exit 0;
 
 ##################
 # Unterprogramm:
@@ -240,9 +291,9 @@ sub rekur
       # Kandidaten zwischenspeichern.
       push(@candidates, grep{/$rule/} file($File::Find::name)); 
    }
+return;
 }
 
-exit 0;
 
 ###################
 # Unterprogramm:
@@ -292,7 +343,7 @@ sub construct_pattern
        $zhash_ref->{$key} = $sign;
        }
    }
-
+return;
 }
 
 ###################
@@ -311,5 +362,5 @@ sub show_hash
    {
        print "$key => $value\n";
    }
-
+return;
 }
