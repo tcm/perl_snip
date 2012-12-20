@@ -12,4 +12,5 @@ sms - SMS-Benachrichtigungen per REST-API.
 template - Einfache Templates mit dem Template-Toolkit.
 threads - Threads in Perl.
 threads_sql - Threads in Verbindung mit SQL-Abfragen.
+vma - VMWARE VMA Hilfsroutinen.
 xml - Routinen die den Umgang mit XML zeigen.
