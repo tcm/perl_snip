@@ -5,9 +5,9 @@ use warnings;
 use Data::Dumper;
 
 
-#my @results = grep  get_size($_) , @ARGV;
+my @results = grep  get_size($_) , @ARGV;
 # oder
-my @results = grep  { -s < 1000 }, @ARGV;
+# my @results = grep  { -s < 1000 }, @ARGV;
 
 
 sub get_size
