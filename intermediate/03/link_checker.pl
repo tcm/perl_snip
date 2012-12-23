@@ -6,7 +6,7 @@ use HTTP::SimpleLinkChecker qw(check_link);
 use Data::Dumper;
 
 my @good_links;
-my @links_to_check =  ("www.ubuntu.com", "www.liniso.de", "www.perl.org");
+my @links_to_check =  ("www.ubuntu.com", "www.liniso.de/test", "www.perl.org");
 
 
 #print check_link("www.liniso.de");
