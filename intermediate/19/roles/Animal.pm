@@ -6,7 +6,14 @@ requires qw( sound default_color );
 
 
 has 'name' => ( is => 'rw', required => 1 );
-has 'color' => ( is => 'rw', default => sub { shift->default_color } );
+has 'color' => ( is => 'ro', writer => '_private_set_color', ,default => sub { shift->default_color } );
+
+sub _private_set_color
+{
+  my ($self,$color) = @_;
+
+  $self->color('$color');  
+}
 
 
 sub speak

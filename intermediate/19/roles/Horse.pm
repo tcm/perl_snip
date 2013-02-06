@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 with 'Animal';
 
-sub default_color { 'white' };
+sub default_color { 'white and green' };
 sub sound { 'brrrrrrr' };
 
 
