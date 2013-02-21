@@ -14,6 +14,7 @@ my $naptime = 1;
 my $reconnect_time = 120;
 my $logfile = "/var/log/messages";
 # my $logfile = "./messages";
+
 while(1)
 {
         
@@ -34,7 +35,7 @@ while(1)
       	      if (/usv/) # Auf USV-Meldungen lauschen.
       	      {
       	      print $_;
-      	      &send_sms($_);
+      	      &send_sms("+49171xxxxxxx",$_);
       	      } 
    	   }
 
@@ -52,30 +53,40 @@ while(1)
 
 sub send_sms
 {
-   my $message = shift;
+   my ($number,$message) = @_;
+
+   $message = substr($message,0,159);
+
+
+   print "$number\n";
+   print "$message\n";
 
    my $nexmo = Nexmo::SMS->new(
    server   => 'http://rest.nexmo.com/sms/json',
-   username => 'xxxxxxx',
-   password => 'xxxxxxx',
+   #server   => 'http://rest.nexmo.com/sms/',
+   username => 'xxxxxxxxx',
+   password => 'xxxxxxxxx',
    );
 
    my $sms = $nexmo->sms(
    text     => $message,
-   from     => 'PASS-Admin',
-   to       => '+49171xxxxxxxx',
+   from     => 'User1',
+   to       => $number,
    ) or die $nexmo->errstr;
 
-   my $response = $sms->send || die $sms->errstr;
+   my $response = $sms->send || warn $sms->errstr;
 
-   if ( $response->is_success )
+   if ( $sms->errstr ) 
    {
-   print "SMS was sent...\n";
+   print "SMS was not sent...\n";
+   system("echo 'Nexmo-Dienst nicht verfuegbar!' | mail -s 'Warnung: SMS-Versand' admin\@pass-lokal.com");
    }
+   else
+   {
+   print "SMS was sent via Nexmo!\n" if ( $response->is_success );
+   }
+
 }
-
-
-
 
 # Dahin kommen wir nie.... ;-)
 exit(0);
