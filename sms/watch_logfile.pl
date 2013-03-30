@@ -3,12 +3,16 @@
 use strict;
 use warnings;
 
+use v5.10;
+use Switch;
 # Standard-Module
-use Data::Dumper;
+# use Data::Dumper;
 use IO::Handle;
 use File::stat;
+use Net::SMTP;
 # CPAN
 use Nexmo::SMS;
+use IPC::System::Simple qw(system);
 
 my $naptime = 1;
 my $reconnect_time = 120;
@@ -32,11 +36,12 @@ while(1)
    
    	   while (<$fh_logfile>)
    	   {
-      	      if (/usv/) # Auf USV-Meldungen lauschen.
-      	      {
-      	      print $_;
-      	      &send_sms("+49171xxxxxxx",$_);
-      	      } 
+              print $_;
+              switch ($_)
+              {
+              case /APC/ { print "Hit APC> ".$_ ; &send_sms("0171xxxxxxxx", $_); } # Auf Nachrichten der USV lauschen.
+              case /UPS/ { print "Hit UPS> ".$_ ; &send_sms("0171xxxxxxxx", $_); }
+              }
    	   }
 
            # Warten...., pruefen ob die Datei noch existiert
@@ -47,7 +52,7 @@ while(1)
            $fh_logfile->clearerr();
         }
         close($fh_logfile);
-        print "Reconnect to file $logfile in $reconnect_time (sec).\n";
+        say "Reconnect to file $logfile in $reconnect_time (sec).";
         sleep($reconnect_time);        
 }
 
@@ -57,20 +62,21 @@ sub send_sms
 
    $message = substr($message,0,159);
 
+   say "$number";
+   say "$message";
 
-   print "$number\n";
-   print "$message\n";
+   chomp($message);
 
    my $nexmo = Nexmo::SMS->new(
-   server   => 'http://rest.nexmo.com/sms/json',
-   #server   => 'http://rest.nexmo.com/sms/',
-   username => 'xxxxxxxxx',
-   password => 'xxxxxxxxx',
+   #server   => 'http://rest.nexmo.com/sms/json',
+   server   => 'http://rest.nexmo.com/sms/',
+   username => 'xxxxxxxxxx',
+   password => 'xxxxxxxxxx',
    );
 
    my $sms = $nexmo->sms(
    text     => $message,
-   from     => 'User1',
+   from     => 'PASS-Nexmo',
    to       => $number,
    ) or die $nexmo->errstr;
 
@@ -78,14 +84,32 @@ sub send_sms
 
    if ( $sms->errstr ) 
    {
-   print "SMS was not sent...\n";
-   system("echo 'Nexmo-Dienst nicht verfuegbar!' | mail -s 'Warnung: SMS-Versand' admin\@pass-lokal.com");
+   say "Try to send SMS via SMS-Link...";
+   &send_email("admin\@pass-lokal.com","Warnung: SMS-Versand", "Nexmo-Dienst nicht verfuegbar!"); 
+   system("/usr/local/bin/sendsms -d $number -m '$message' localhost");
    }
    else
    {
-   print "SMS was sent via Nexmo!\n" if ( $response->is_success );
+   say "SMS was sent via Nexmo!\n" if ( $response->is_success );
    }
 
+}
+
+sub send_email
+{
+    my ($recipient, $subject, $message) = @_;
+
+    my $smtp = Net::SMTP->new('mail.pass-lokal.com');
+
+    $smtp->mail($ENV{USER});
+    $smtp->to($recipient);
+    $smtp->data();
+    $smtp->datasend("To: $recipient\n");
+    $smtp->datasend("Subject:".$subject."\n");
+    $smtp->datasend("\n");
+    $smtp->datasend($message."\n");
+    $smtp->dataend();
+    $smtp->quit;
 }
 
 # Dahin kommen wir nie.... ;-)
