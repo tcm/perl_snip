@@ -16,12 +16,15 @@ mkdir($rootdir);
 # Verzeichnisse 600 bis 6xx anlegen.
 ####################################
 my $aaa  = 600;
-my $a = 1;
+my $a = 31;
 my $n1 = 0;
+
+if ( $a > 50 ) { print "a zu groß!\n"; exit 1; }
 
 while ( $n1 <= $a)
 { 
    my $dir = dir($rootdir, $aaa);
+   print $dir."\n";
    mkdir($dir);
 
    #Verzeichnisse 6xx0 bis 6xx9 anlegen.
