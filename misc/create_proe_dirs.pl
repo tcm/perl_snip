@@ -5,7 +5,7 @@ use warnings;
 
 use Path::Class;
 
-my $rootdir = "proe_archiv";
+my $rootdir = "/home/user1/proe_archiv";
 
 
 
@@ -44,6 +44,16 @@ while ( $n1 <= $a)
          my $n3_string = substr("000".$n3,-3); # Führende Nullen erzeugen.
          my $dir = dir($rootdir, $aaa, $aaa.$n2, $aaa.$n2.$n3_string);
          mkdir($dir);
+
+         # File im Verzeichnis anlegen.
+         for my $ext (qw(.drw.1 .prt.1 .asm.1 .drw.2 .prt.2 .asm.2))
+         {
+             my $file = dir($rootdir, $aaa, $aaa.$n2, $aaa.$n2.$n3_string, $aaa.$n2.$n3_string.$ext);
+             open my $fh , '>', $file || die "$file konnte nicht geoeffnet werden.\n";
+             print $fh $aaa.$n2.$n3_string."\n";
+             close $fh;
+         }
+
          $n3++;
       }
 
