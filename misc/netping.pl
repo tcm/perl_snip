@@ -9,7 +9,8 @@ use Net::SMTP;
 use POSIX qw(strftime); 
 
 my @check_switch = qw(swxxxxx-1  swxxxx-3 );
-);
+
+my @check_host = qw(vm-server-1 vm-server-2);
 
 my @check_ap = qw(ap-1 ap-2);
 
