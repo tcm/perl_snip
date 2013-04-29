@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+#######################################
+# Eine einfache Logfile-Überwachung.
+#
+# (jb) 29.04.2013
+#######################################
+
 use strict;
 use warnings;
 
@@ -7,55 +13,34 @@ use v5.10;
 use Switch;
 # Standard-Module
 # use Data::Dumper;
-use IO::Handle;
-use File::stat;
 use Net::SMTP;
 # CPAN
 use Nexmo::SMS;
 use IPC::System::Simple qw(system);
+use File::Tail;
 
-my $naptime = 1;
-my $reconnect_time = 120;
 my $logfile = "/var/log/messages";
-# my $logfile = "./messages";
+my $line;
 
-while(1)
+# Logfile beobachten.
+my $file = File::Tail->new($logfile);
+while (defined($line=$file->read)) 
 {
-        
-        print "Connect to file $logfile.\n";
-	open my $fh_logfile, "<" , $logfile or die "Kann die Datei '$logfile' nicht oeffnen: $!";
-           
+  print "$line";
+  
+  # Bei bestimmen Zeileninhalten eine Nachricht versenden.  
+  switch ($line)
+  {
+  case /APC/ { print "Hit APC> ".$line ; &send_sms("0171xxxxxxx", $line); } # Auf Nachrichten der USV lauschen.
+  case /UPS/ { print "Hit UPS> ".$line ; &send_sms("0171xxxxxxx", $line); }
+  }
 
-	# I. Einmal bis zum Ende der Datei springen.
-	while (<$fh_logfile>){ }
-	$fh_logfile->clearerr();
 
-	# II. Ab jetzt das Ende der Datei beobachten. 
-	while(1)
-	{
-   
-   	   while (<$fh_logfile>)
-   	   {
-              print $_;
-              switch ($_)
-              {
-              case /APC/ { print "Hit APC> ".$_ ; &send_sms("0171xxxxxxxx", $_); } # Auf Nachrichten der USV lauschen.
-              case /UPS/ { print "Hit UPS> ".$_ ; &send_sms("0171xxxxxxxx", $_); }
-              }
-   	   }
-
-           # Warten...., pruefen ob die Datei noch existiert
-           # und dann das EOF-Flag loeschen.
-           sleep $naptime;
-           
-           last  if  (stat(*$fh_logfile)->nlink == 0); 
-           $fh_logfile->clearerr();
-        }
-        close($fh_logfile);
-        say "Reconnect to file $logfile in $reconnect_time (sec).";
-        sleep($reconnect_time);        
 }
+exit(0);
 
+# SMS über NEXMO oder Failover über SMS-Link versenden.
+#
 sub send_sms
 {
    my ($number,$message) = @_;
@@ -70,8 +55,8 @@ sub send_sms
    my $nexmo = Nexmo::SMS->new(
    #server   => 'http://rest.nexmo.com/sms/json',
    server   => 'http://rest.nexmo.com/sms/',
-   username => 'xxxxxxxxxx',
-   password => 'xxxxxxxxxx',
+   username => '2d4628c0',
+   password => 'cba49144',
    );
 
    my $sms = $nexmo->sms(
@@ -86,6 +71,7 @@ sub send_sms
    {
    say "Try to send SMS via SMS-Link...";
    &send_email("admin\@pass-lokal.com","Warnung: SMS-Versand", "Nexmo-Dienst nicht verfuegbar!"); 
+   #system("/usr/local/bin/sendsms -d $number -m 'SMS-Link-Testmessage' localhost");
    system("/usr/local/bin/sendsms -d $number -m '$message' localhost");
    }
    else
@@ -95,6 +81,8 @@ sub send_sms
 
 }
 
+# Benachrichtigungs-Email generieren.
+#
 sub send_email
 {
     my ($recipient, $subject, $message) = @_;
@@ -111,6 +99,3 @@ sub send_email
     $smtp->dataend();
     $smtp->quit;
 }
-
-# Dahin kommen wir nie.... ;-)
-exit(0);
