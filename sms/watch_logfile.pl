@@ -55,8 +55,8 @@ sub send_sms
    my $nexmo = Nexmo::SMS->new(
    #server   => 'http://rest.nexmo.com/sms/json',
    server   => 'http://rest.nexmo.com/sms/',
-   username => '2d4628c0',
-   password => 'cba49144',
+   username => 'xxxxxxxx',
+   password => 'xxxxxxxx',
    );
 
    my $sms = $nexmo->sms(
