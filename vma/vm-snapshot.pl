@@ -16,7 +16,7 @@ getopts('h:',\%opts);
 
 
 # Hostname
-if (defined $opts{h})
+if ( defined $opts{h} )
 {
 $hostname = $opts{h};
 }
@@ -34,7 +34,7 @@ $vima_target->login();
 
 my $entity_views = Vim::find_entity_views(view_type => "VirtualMachine");
 
-foreach my $entity_view (@$entity_views) 
+foreach my $entity_view ( @$entity_views ) 
 {
    my $entity_name = $entity_view->name;
    my $entity_snapshot = $entity_view->snapshot;
@@ -42,7 +42,7 @@ foreach my $entity_view (@$entity_views)
    if ( ($entity_view->runtime->powerState->val eq 'poweredOn') )
    {
    #print "[$entity_name] is on.\n";
-   if (defined ($entity_snapshot)) 
+   if ( defined ($entity_snapshot) ) 
    { 
    #print "<$entity_snapshot>\n"; 
    #print "<$entity_snapshot->{rootSnapshotList}>\n"; 
@@ -58,43 +58,54 @@ foreach my $entity_view (@$entity_views)
 }
 print "\n";
 
-if (scalar(@old_snapshots) > 0)
+if ( scalar(@old_snapshots) > 0 )
 {
 print "Old Snapshots found.\n";
-map {
-printf "%s (%s Days) \n",
-$_->{'vm'}, $_->{'age'}
+
+map 
+{
+   printf "%s (%s Days) \n",
+   $_->{'vm'}, $_->{'age'}
+
 } @old_snapshots;
+
 }
 
 print "\n";
 exit 0;
 
 ###############################################
-# Snapshot-Alter
+# Snapshot-Alter prüfen.
 # 1 Day = 86400s
 # 3 Days = 259200s
 # 1 Week = 604800s
 ################################################
-sub check_age {
-  my $date_created = shift;
-  return(1) if ((time() - $date_created) > 86400);
-  return(0);
+sub check_age 
+{
+   my $date_created = shift;
+
+   return(1) if( (time() - $date_created) > 86400);
+   return(0);
 }
 
 #################################################
 # Über die Snapshots iterieren. 
 #################################################
-sub check_snaplist {
-  my $vm_name = shift;
-  my $vm_snaptree = shift;
+sub check_snaplist 
+{
+   my $vm_name = shift;
+   my $vm_snaptree = shift;
 
-  foreach my $vm_snapshot (@{$vm_snaptree}) {
-    my $date_snapshot = str2time($vm_snapshot->{createTime});
-    next unless (check_age($date_snapshot));
-    $old_snapshots[scalar(@old_snapshots)] = {
-      'vm' => $vm_name,
-      'age' => ceil(((time() - $date_snapshot) / 86400)),
-    };
-  }
+   foreach my $vm_snapshot ( @{$vm_snaptree} ) 
+   {
+      my $date_snapshot = str2time($vm_snapshot->{createTime});
+      next unless ( check_age($date_snapshot) );
+
+      $old_snapshots[scalar(@old_snapshots)] = 
+      {
+         'vm' => $vm_name,
+         'age' => ceil(( (time() - $date_snapshot) / 86400)),
+      };
+
+   }
 }
