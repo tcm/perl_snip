@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+###############################################
+# Snapshots mit bestimmten Alter suchen.
+#
+# (jb) Mai 2013
+###############################################
 use strict;
 use warnings;
 use VMware::VIFPLib;
@@ -32,21 +37,28 @@ print "Query Host: [--- ".$vima_target->name() . " ---]\n\n";
 
 $vima_target->login();
 
+# Alle virtuellen Maschinen im Inventory.
 my $entity_views = Vim::find_entity_views(view_type => "VirtualMachine");
 
+# Hostname und Snapshotname auflisten.
 foreach my $entity_view ( @$entity_views ) 
 {
    my $entity_name = $entity_view->name;
    my $entity_snapshot = $entity_view->snapshot;
 
+   # Nur angeschaltete Maschinen betrachten.
    if ( ($entity_view->runtime->powerState->val eq 'poweredOn') )
    {
    #print "[$entity_name] is on.\n";
+   # Existiert überhaupt ein Snapshot?
    if ( defined ($entity_snapshot) ) 
    { 
    #print "<$entity_snapshot>\n"; 
-   #print "<$entity_snapshot->{rootSnapshotList}>\n"; 
+   #print "<$entity_snapshot->{rootSnapshotList}>\n";
+
+   # Snapshots durchlaufen und auf ihr Alter prüfen. 
    &check_snaplist($entity_name, $entity_snapshot->{rootSnapshotList} );
+
    #print Dumper $entity_snapshot;
    }
   
