@@ -50,6 +50,7 @@ foreach my $entity_view ( @$entity_views )
    if ( ($entity_view->runtime->powerState->val eq 'poweredOn') )
    {
    #print "[$entity_name] is on.\n";
+
    # Existiert überhaupt ein Snapshot?
    if ( defined ($entity_snapshot) ) 
    { 
@@ -61,7 +62,6 @@ foreach my $entity_view ( @$entity_views )
 
    #print Dumper $entity_snapshot;
    }
-  
    } 
    else 
    {
