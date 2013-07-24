@@ -28,11 +28,26 @@ while (defined($line=$file->read))
 {
   print "$line";
   
-  # Bei bestimmen Zeileninhalten eine Nachricht versenden.  
+  # Bei bestimmten Zeileninhalten eine Nachricht versenden.  
   switch ($line)
   {
-  case /APC/ { print "Hit APC> ".$line ; &send_sms("0171xxxxxxx", $line); } # Auf Nachrichten der USV lauschen.
-  case /UPS/ { print "Hit UPS> ".$line ; &send_sms("0171xxxxxxx", $line); }
+     # Zeile enthält APC:
+     case /APC:/ 
+     { 
+     my $pos = rindex($line,":");
+     my $form_line = substr($line, $pos+2); # Text ab dem letzten Doppelpunkt 
+                                            # als Nachrichtentext ausgeben. 
+     print "Hit APC: ".$line ; &send_sms("+49171xxxxx", $form_line); 
+     } 
+
+     # Zeile enthält  UPS:
+     case /UPS:/ 
+     { 
+     my $pos = rindex($line,":");
+     my $form_line = substr($line, $pos+2); # Text ab dem letzten Doppelpunkt 
+                                            # als Nachrichtentext ausgeben. 
+     print "Hit UPS: ".$line ; &send_sms("+49171xxxxx", $form_line);
+     } 
   }
 
 
@@ -53,10 +68,10 @@ sub send_sms
    chomp($message);
 
    my $nexmo = Nexmo::SMS->new(
-   #server   => 'http://rest.nexmo.com/sms/json',
-   server   => 'http://rest.nexmo.com/sms/',
-   username => 'xxxxxxxx',
-   password => 'xxxxxxxx',
+   server   => 'http://rest.nexmo.com/sms/json',
+   #server   => 'http://rest.nexmo.com/sms/',
+   username => 'xxxxxxx',
+   password => 'xxxxxxx',
    );
 
    my $sms = $nexmo->sms(
@@ -69,9 +84,9 @@ sub send_sms
 
    if ( $sms->errstr ) 
    {
+   say $sms->errstr;
    say "Try to send SMS via SMS-Link...";
    &send_email("admin\@pass-lokal.com","Warnung: SMS-Versand", "Nexmo-Dienst nicht verfuegbar!"); 
-   #system("/usr/local/bin/sendsms -d $number -m 'SMS-Link-Testmessage' localhost");
    system("/usr/local/bin/sendsms -d $number -m '$message' localhost");
    }
    else
