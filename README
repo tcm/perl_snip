@@ -2,16 +2,20 @@
 doc - Dokumentationen.
 hinventory - Hilfsroutinen für hinventory.
 http_post_upload - CGI-Upload auf einen Webserver.
-lager - Routinen für Lagerbuchungen mit dem Funkbarcodeleser.
+inline_c - C-Source einbetten.
 intermediate - Uebungen aus dem Perl-Buch.
+lager - Routinen für Lagerbuchungen mit dem Funkbarcodeleser.
 lpd - Hilfsroutinen zum reinigen von Print-Queues.
 misc - Verschiedenes.
 moose - Objektbeispiele mit Moose.
 old_scripts - Alte Scripts, die nicht gut progammiert sind.
 perl_module - Grundgerüst für Module.
+polymorphe beispiele - Vorlagen fuer objektorientierte Programmierung.
+statistik - Einfache statisitsche Funktionen.
 sms - SMS-Benachrichtigungen per REST-API.
 template - Einfache Templates mit dem Template-Toolkit.
 threads - Threads in Perl.
 threads_sql - Threads in Verbindung mit SQL-Abfragen.
 vma - VMWARE VMA Hilfsroutinen.
 xml - Routinen die den Umgang mit XML zeigen.
+xs - Ganz einfaches XS-Beispiel.
