@@ -3,6 +3,7 @@ doc - Dokumentationen.
 hinventory - Hilfsroutinen für hinventory.
 http_post_upload - CGI-Upload auf einen Webserver.
 lager - Routinen für Lagerbuchungen mit dem Funkbarcodeleser.
+intermediate - Uebungen aus dem Perl-Buch.
 lpd - Hilfsroutinen zum reinigen von Print-Queues.
 misc - Verschiedenes.
 moose - Objektbeispiele mit Moose.
