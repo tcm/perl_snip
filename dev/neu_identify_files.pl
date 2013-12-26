@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 # Versionsbestimmung für Creo und Proe Wildfire.
 #
-# (jb) 11.11.2013
+# (jb) 26.12.2013
 
-#perl2exe_include "Path/Class/Entity.pm";
 
 use strict;
 use warnings;
@@ -14,7 +13,6 @@ use POSIX qw( strftime );
 use File::Path qw(make_path);
 use File::Spec;
 use File::Basename;
-# use Path::Class;
 use Getopt::Std;
 use feature qw/switch/;
 
@@ -23,34 +21,36 @@ use IFiles;
 
 
 my @candidates; # Alle Dateien nach Suchmuster
-my @final; # Alle Dateien nach Suchmuster und COUNT >1
-my @crit; # Suchmuster
+my @final;      # Alle Dateien nach Suchmuster und COUNT > 1
+my @final2;     # Alle Dateien nach Suchmuster und ohne Dateien mit der höchsten Endung.
 
+my @crit;                 # Die Suchmuster
 $crit[0] = '\.prt\.\d+$'; # Suchmuster einzeln
 $crit[1] = '\.drw\.\d+$';
 
 
-my %file_anz; # assoziatives Array;
-              # Schluessel = Dateiname bis letzten Punkt; Wert = absolute Anzahl der Dateien mit gleichem Anfang.
+my %file_anz;           # assoziatives Array.
+                        # Schluessel = Dateiname bis letzten Punkt; Wert = absolute Anzahl der Dateien mit gleichem Anfang.
 
-my %suff_max; # assoziatives Array;
-              # Schluessel = Dateiname bis letzten Punkt; Wert = hoechste Endung
-my %suff_max_minus_one;   # assoziatives Array;
-                          # Schluessel = Dateiname bis letzten Punkt; Wert = zweithöchste Endung
+my %suff_max;           # assoziatives Array.
+                        # Schluessel = Dateiname bis letzten Punkt; Wert = hoechste Endung.
 
-my %version_pattern; # assoziatives Array;
-                     # Schluessel = Dateiname bis letzten Punkt; Wert = Versionsmuster (C=Creo, W=Wildfire, _=undef)
+my %suff_max_minus_one; # assoziatives Array.
+                        # Schluessel = Dateiname bis letzten Punkt; Wert = zweithöchste Endung.
 
-my $num = 0; # momentan höchste Endung.
+my %version_pattern;    # assoziatives Array.
+                        # Schluessel = Dateiname bis letzten Punkt; Wert = Versionsmuster (C=Creo, W=Wildfire, _=undef)
+
+my $num = 0;            # momentan höchste Endung.
 
 
 my $key;
 my $value;
-my $source_path;  # Quellpfad zum verschieben der Dateien.
-my $dest_path;    # Zielpfad zum verschieben der Dateien.
-my $n;            # Anzahl der Schlüssel im Hash.
+my $source_path;        # Quellpfad zum verschieben der Dateien.
+my $dest_path;          # Zielpfad zum verschieben der Dateien.
+my $n;                  # Anzahl der Schlüssel im Hash.
 my $timestamp;
-my $version="0.93.2";
+my $version="0.94";
 my %options;
 
 getopts('i:o:vdzh',\%options);
@@ -93,12 +93,19 @@ $dest_path=$options{o};
 print "Input-Path: $source_path\n";
 print "Output-Path: $dest_path\n";
 
+
+##########################
+# 1. Kandidaten
+#    nach Suchmuster 
+#    finden.
+##########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_1: Find candidates.\n";
+
 find(\&rekur, $source_path);
  
 ###########################
-# I. Anzahl der Dateien
+# 2. Anzahl der Dateien
 # pro Prefix bestimmen.
 ###########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
@@ -106,40 +113,29 @@ print "$timestamp -- PASS_2: Gernerate Hash \%file_anz.\n";
 
 my $obj_files = IFiles->new();
 $obj_files->count_candidate_files(\@candidates,\%file_anz);
-#print Dumper %file_anz;
 
 ##################################
-# II. Array nur mit den
+# 3. Array nur mit den
 # relevanten Kandidaten erzeugen.
 ##################################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_3: Create Array \@final were COUNT > 1.\n";
 
-
 $obj_files->filter_candidate_files_by_count(\@candidates,\%file_anz,\@final);
-print Dumper @final;
-
-######
-#Debug
-######
-#show_hash(\%file_anz);
-#print "\n\n";
-#foreach my $row (@final)
-#{
-#print "$row\n";
-#}
-
-
 @candidates = (); # Nicht benötige Datenstrukturen
-%file_anz = ();   # löschen.
-
+%file_anz = ();   # wieder freigeben.
 $n = @final; print "$timestamp -- Count \@final: $n\n";
 
-
 ###############################
-# IV. Hash mit der höchsten
+# 4. Maxmimum-Bestimmung.
+# Hash mit der höchsten
 # Endung pro Prefix erstellen.
 #
+# Ein neues Array erzeugen,
+# das die Dateien mit höchsten
+# Endung nicht mehr enthält.
+#
+# Erneute Maximum-Bestimmung.
 # Hash mit der zweithöchsten
 # Endung pro Prefix erstellen.
 ###############################
@@ -147,72 +143,15 @@ $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_4: Create Hashes \%suff_max and \%suff_max_minus_one.\n";
 
 $obj_files->get_max_file_postfix(\@final,\%suff_max);
-#print Dumper %suff_max;
+$obj_files->filter_hash_values_from_array(\@final,\%suff_max,\@final2);
+$obj_files->get_max_file_postfix(\@final2,\%suff_max_minus_one);
 
-exit 0;
-
-#foreach my $matched_file (@final)
-#{
-#   $num = substr($matched_file, rindex($matched_file, ".")+1, );
-#   my $datei = substr($matched_file, 0, rindex($matched_file, "."));
-  
-   ######################
-   # (Max-1)-Bestimmung.
-   ######################
-   #if(exists($suff_max_minus_one{$datei}) < $num)
-   #{
-   #$suff_max_minus_one{$datei}=$num;
-
-   #######
-   # Debug
-   #######
-   #print "---------------------\n";
-   #print "Datei: $datei Num: $num\n";
-   #print "\n\nMAX:\n";
-   #show_hash(\%suff_max);
-   #my $taste = <STDIN>;
-   #}
-#}
-
-
-foreach my $matched_file (@final)
-{
-   $num = substr($matched_file, rindex($matched_file, ".")+1, );
-   my $datei = substr($matched_file, 0, rindex($matched_file, "."));
-  
-   ######################
-   # (Max)-Bestimmung.
-   ######################
-   if ($suff_max_minus_one{$datei} != $num )
-   {
-   if(exists($suff_max{$datei}) < $num)
-   {
-   $suff_max{$datei}=$num;
-
-   ########
-   # Debug
-   ########
-   # print "---------------------\n";
-   # print "\n\nMAX_MINUS_ONE:\n";
-   # show_hash(\%suff_max_minus_one);
-   # my $taste = <STDIN>;
-   }
-   }
-}
-########
-# Debug
-########
-print "\n\n";
-print "MAX:\n";
-show_hash(\%suff_max);
-print "\n\n";
-print "MAX_MINUS_ONE:\n";
-show_hash(\%suff_max_minus_one);
+$n = @final2; print "$timestamp -- Count \@final2: $n\n";
 
 exit 0;
 
 ###########################
-# V. Version-Pattern
+# 5. Version-Pattern
 # erzeugen.
 ###########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;

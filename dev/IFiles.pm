@@ -75,7 +75,7 @@ sub get_max_file_postfix
    my $num = 0;
    
    
-   # Intialisierung des Hashes mit dem File-Prefix
+   # Intialisierung des Hashes mit dem File-Prefix.
    foreach my $matched_file ( @{ $array_ref } )
    {
       my $file = substr($matched_file, 0, rindex($matched_file, ".")); # Prefix
@@ -85,22 +85,24 @@ sub get_max_file_postfix
    # Suche nach dem Maximum.
    foreach my $matched_file ( @{ $array_ref } )
    {
-      $num = substr($matched_file, rindex($matched_file, ".")+1, );    # Endung
+      $num = substr($matched_file, rindex($matched_file, ".") + 1, );    # Endung
       my $file = substr($matched_file, 0, rindex($matched_file, ".")); # Prefix
 
-      if( ${$hash_ref}{$file}  < $num) # Max-Bestimmung
+      if( ${$hash_ref}{$file}  < $num) # Max-Bestimmung.
       {
       ${$hash_ref}{$file}=$num;
       }
    }
 }
 
+# Speichert die Werte im Ziel-Array,
+# die nicht im Filter-Hash enthalten sind.
 sub filter_hash_values_from_array
 {
    my $self = shift;
-   my $array_ref = shift;  # Quelle: Array mit Dateinamen.
-   my $hash_ref  = shift;  # Hash mit File-Prefix und maximalen Postfix.
-   my $array2_ref  = shift;  # Ziel. 
+   my $array_ref = shift;    # Quelle: Array mit Dateinamen.
+   my $hash_ref  = shift;    # Filter: Hash mit File-Prefix und maximalen Postfix.
+   my $array2_ref  = shift;  # Ziel: Array mit Dateinamen. 
    my $num = 0;
 
    foreach my $matched_file ( @ { $array_ref } )
@@ -108,8 +110,8 @@ sub filter_hash_values_from_array
       my $file = substr($matched_file, 0, rindex($matched_file, ".")); # Prefix
       $num = substr($matched_file, rindex($matched_file, ".")+1, );    # Endung
 
-      unless ( ${$hash_ref}{$file} == $num )  # Wenn der Wert nicht im Hash
-      {                                       # gespeichert ist wird er im Ziel-Array gespeichert.
+      unless ( ${$hash_ref}{$file} == $num )  # Nur wenn der Wert NICHT im Filter-Hash
+      {                                       # enthalten ist, wird er im Ziel-Array gespeichert.
          push @{ $array2_ref }, $matched_file;
       } 
    }
