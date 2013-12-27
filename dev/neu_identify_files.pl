@@ -148,8 +148,6 @@ $obj_files->get_max_file_postfix(\@final2,\%suff_max_minus_one);
 
 $n = @final2; print "$timestamp -- Count \@final2: $n\n";
 
-exit 0;
-
 ###########################
 # 5. Version-Pattern
 # erzeugen.
@@ -172,47 +170,29 @@ construct_pattern(\%suff_max, \%version_pattern);
 # Alle anderen löschen wir
 # aus den Hashes.
 #############################
-######
-#Debug
-######
-#show_hash(\%suff_max);
-#print "\n";
-#show_hash(\%version_pattern);
 
-if(defined $options{z})
-{
-$timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
-print "$timestamp -- Optimize: Shrink Hashes MAX and MAX_MINUS_ONE.\n";
-while ( ($key,$value) = each %version_pattern )
-{
-    if ($value ne "C" )
-    {
-    delete $suff_max{$key};
-    delete $suff_max_minus_one{$key}
-    }
-}
-$n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: $n\n";
-}
-#######
-#Debug
-#######
-#print "\n\nNachher:\n";
-#show_hash(\%suff_max);
-#show_hash(\%suff_max_minus_one);
+#if(defined $options{z})
+#{
+#$timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
+#print "$timestamp -- Optimize: Shrink Hashes MAX and MAX_MINUS_ONE.\n";
+#while ( ($key,$value) = each %version_pattern )
+#{
+#    if ($value ne "C" )
+#    {
+#    delete $suff_max{$key};
+#    delete $suff_max_minus_one{$key}
+#    }
+#}
+#$n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: $n\n";
+#}
 
 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- Process: Shorter Hash MAX_MINUS_ONE.\n";
 construct_pattern(\%suff_max_minus_one, \%version_pattern);
-
-
-#######
-#Debug
-#######
-#print "\n\nNachher:\n";
-#show_hash(\%suff_max);
-#show_hash(\%suff_max_minus_one);
 show_hash(\%version_pattern);
+
+exit 0;
 
 ###########################
 # VI. Verschieben der
@@ -276,61 +256,6 @@ sub rekur
       # Kandidaten zwischenspeichern.
       #push(@candidates, grep{/$rule/} file($File::Find::name));
       push(@candidates, grep{/$rule/} $File::Find::name);
-   }
-return;
-}
-
-
-###################
-# Unterprogramm:
-#
-# Muster erzeugen.
-###################
-sub construct_pattern
-{
-   my ($qhash_ref, $zhash_ref) = @_;
-   my $key;
-   my $value;
-   my $file;
-   my $sign;
-
-   while ( ($key,$value) = each % {$qhash_ref} )
-   {
-       #print "$key => $value\n";
-       #####################
-       # Erste Zeile lesen.
-       #####################
-       $file = $key.".".$value;
-       ########
-       # Debug
-       ########
-       #print "$file\n";
-
-       open my $fh, '<', $file;
-       my $firstline = <$fh>;
-
-       ####################
-       # Version prüfen.
-       ####################
-       given($firstline)
-       {
-       when (/2010370/) { $sign = "C"; } # Creo ?
-       when (/2006420/) { $sign = "W"; } # Wildfire ?
-       default { $sign = "_"; } # Unbekannt ?
-       }
-       close $fh;
-
-       # String erzeugen. Wenn der Hash-Key schon existiert anhängen,
-       # ansonsten neu zuweisen.
-       if( exists($zhash_ref->{$key}) )
-       {
-       my $temp = $zhash_ref->{$key};
-       $zhash_ref->{$key} = $temp.$sign;
-       }
-       else
-       {
-       $zhash_ref->{$key} = $sign;
-       }
    }
 return;
 }

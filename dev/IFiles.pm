@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use feature qw/switch/;
+
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -13,6 +15,7 @@ count_candidate_files
 filter_candidate_files_by_count
 get_max_file_postfix 
 filter_hash_values_from_array 
+construct_pattern
 testme);
 
 # Konstruktor
@@ -115,11 +118,59 @@ sub filter_hash_values_from_array
          push @{ $array2_ref }, $matched_file;
       } 
    }
-   
-} 
+}
+ 
+#
+#
+#
+sub construct_pattern
+{
+   my $self = shift;
+   my $qhash_ref = shift;
+   my $zhash_ref = shift;
+   my $key;
+   my $value;
+   my $file;
+   my $sign;
+ 
+   while ( ($key,$value) = each % {$qhash_ref} )
+   {
+       #####################
+       # Erste Zeile lesen.
+       #####################
+       $file = $key.".".$value;
 
-sub testme{
- print "blub\n";
+       print $file."\n";
+       open my $fh, '<', $file;
+       my $firstline = <$fh>;
 
+       ####################
+       # Version prüfen.
+       ####################
+       given($firstline)
+       {
+       when (/2010370/) { $sign = "C"; } # Creo 
+       when (/2006420/) { $sign = "W"; } # Wildfire
+       default { $sign = "?"; }          # Unbekannt?
+       }
+       close $fh;
+
+       # String erzeugen. Wenn der Hash-Key schon existiert anhängen,
+       # ansonsten neu zuweisen.
+       if( exists($zhash_ref->{$key}) )
+       {
+       my $temp = $zhash_ref->{$key};
+       $zhash_ref->{$key} = $temp.$sign;
+       }
+       else
+       {
+       $zhash_ref->{$key} = $sign;
+       }
+   }
+}
+
+sub testme
+{
+    print "blub\n";
 }
 1;
