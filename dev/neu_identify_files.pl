@@ -157,7 +157,7 @@ print "$timestamp -- PASS_5: Generate Version-Pattern.\n";
 
 print "$timestamp -- Process: Shorter Hash MAX.\n";
 $n = keys %suff_max; print "$timestamp -- Count \%suff_max: $n\n";
-construct_pattern(\%suff_max, \%version_pattern);
+$obj_files->construct_pattern(\%suff_max, \%version_pattern);
 
 #############################
 # Optimierung:
@@ -170,26 +170,15 @@ construct_pattern(\%suff_max, \%version_pattern);
 # Alle anderen löschen wir
 # aus den Hashes.
 #############################
-
-#if(defined $options{z})
-#{
-#$timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
-#print "$timestamp -- Optimize: Shrink Hashes MAX and MAX_MINUS_ONE.\n";
-#while ( ($key,$value) = each %version_pattern )
-#{
-#    if ($value ne "C" )
-#    {
-#    delete $suff_max{$key};
-#    delete $suff_max_minus_one{$key}
-#    }
-#}
-#$n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: $n\n";
-#}
+$timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
+print "$timestamp -- Optimize: Shrink Hashes MAX and MAX_MINUS_ONE.\n";
+$obj_files->optimize_hash(\%version_pattern, \%suff_max, \%suff_max_minus_one);
+$n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: $n\n";
 
 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- Process: Shorter Hash MAX_MINUS_ONE.\n";
-construct_pattern(\%suff_max_minus_one, \%version_pattern);
+$obj_files->construct_pattern(\%suff_max_minus_one, \%version_pattern);
 show_hash(\%version_pattern);
 
 exit 0;

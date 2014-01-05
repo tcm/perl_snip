@@ -16,6 +16,7 @@ filter_candidate_files_by_count
 get_max_file_postfix 
 filter_hash_values_from_array 
 construct_pattern
+optimize_hash
 testme);
 
 # Konstruktor
@@ -120,9 +121,7 @@ sub filter_hash_values_from_array
    }
 }
  
-#
-#
-#
+# Versionsmuster erzeugen.
 sub construct_pattern
 {
    my $self = shift;
@@ -140,7 +139,7 @@ sub construct_pattern
        #####################
        $file = $key.".".$value;
 
-       print $file."\n";
+       #print $file."\n";
        open my $fh, '<', $file;
        my $firstline = <$fh>;
 
@@ -167,6 +166,29 @@ sub construct_pattern
        $zhash_ref->{$key} = $sign;
        }
    }
+}
+
+# Alle Files bei
+# denen das Muster nicht
+# mit C beginnt entfernen.
+sub optimize_hash
+{
+  my $self = shift;
+  my $qhash1_ref = shift;
+  my $zhash1_ref = shift;
+  my $zhash2_ref = shift;
+  my $key;
+  my $value; 
+
+  while ( ($key,$value) = each % {$qhash1_ref} )
+  {
+     if ($value ne "C" )
+     {
+     delete $zhash1_ref->{$key};
+     delete $zhash2_ref->{$key}
+     }
+  }
+
 }
 
 sub testme
