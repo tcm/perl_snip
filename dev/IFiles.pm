@@ -48,7 +48,7 @@ sub count_candidate_files
        my $file = substr($matched_file, 0, rindex($matched_file, "."));
        ${$hash_ref}{$file}++;           # Anzahl der Files pro Prefix erhöhen.
    }
-   
+   return;   
 }
 
 # Filter erzeugt ein neues Array,
@@ -66,7 +66,7 @@ sub filter_candidate_files_by_count
       my $file = substr($matched_file, 0, rindex($matched_file, ".")); # Prefix
       if ( ${$hash_ref}{$file} > 1 ) { push ( @{ $array2_ref }, $matched_file); }; # Anzahl groesser 1, dann speichern.
    }
-   
+   return; 
 }
 
 # Ermittelt die Files mit dem 
@@ -97,6 +97,7 @@ sub get_max_file_postfix
       ${$hash_ref}{$file}=$num;
       }
    }
+   return;
 }
 
 # Speichert die Werte im Ziel-Array,
@@ -119,6 +120,7 @@ sub filter_hash_values_from_array
          push @{ $array2_ref }, $matched_file;
       } 
    }
+   return;
 }
  
 # Versionsmuster erzeugen.
@@ -166,6 +168,7 @@ sub construct_pattern
        $zhash_ref->{$key} = $sign;
        }
    }
+   return;
 }
 
 # Alle Files bei
@@ -188,11 +191,13 @@ sub optimize_hash
      delete $zhash2_ref->{$key}
      }
   }
+  return;
 
 }
 
 sub testme
 {
     print "blub\n";
+    return;
 }
 1;
