@@ -144,6 +144,7 @@ sub construct_pattern
        #print $file."\n";
        open my $fh, '<', $file;
        my $firstline = <$fh>;
+       close $fh;
 
        ####################
        # Version prüfen.
@@ -154,7 +155,7 @@ sub construct_pattern
        when (/2006420/) { $sign = "W"; } # Wildfire
        default { $sign = "?"; }          # Unbekannt?
        }
-       close $fh;
+       #close $fh;
 
        # String erzeugen. Wenn der Hash-Key schon existiert anhängen,
        # ansonsten neu zuweisen.
