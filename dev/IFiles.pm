@@ -17,6 +17,7 @@ get_max_file_postfix
 filter_hash_values_from_array 
 construct_pattern
 optimize_hash
+move_files
 testme);
 
 # Konstruktor
@@ -193,6 +194,35 @@ sub optimize_hash
      }
   }
   return;
+
+}
+
+# Files verschieben die im Hash
+# dem Muster entsprechen.
+sub move_files
+{
+   my $self = shift;
+   my $qhash1_ref = shift;
+   my $qhash2_ref = shift;
+   my $dest_path = shift;
+   my $key;
+   my $value;
+
+   while ( ($key,$value) = each % {$qhash1_ref} )
+   {
+      if ($value eq "CW" )
+      {
+      my $qfile = File::Spec->catdir($key.".".$qhash2_ref->{$key}); # File-Objekt erzeugen 
+                                                                    # (Filename + höchste Endung).
+      my $qdir = dirname($qfile);
+      my $dest_path_new = File::Spec->catdir($dest_path, $qdir);  # Den neuen Zielpfad zusammensetzen:
+                                                                  # Zielpfad + Verzeichnisteil des Quell-Files.
+      make_path("$dest_path_new");
+      print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
+      print "$qfile -> $value\n";
+      }
+   }
+
 
 }
 
