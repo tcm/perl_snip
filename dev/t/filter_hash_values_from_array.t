@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 1;
 
 use IFiles;
-use Data::Dumper;
+use DDP;
 
 my @testset1 = qw(
 file6.prt.1

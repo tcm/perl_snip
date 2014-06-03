@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Versionsbestimmung für Creo und Proe Wildfire.
 #
-# (jb) 26.12.2013
+# (jb) 03.06.2014
 
 
 use strict;
@@ -11,12 +11,12 @@ use File::Copy;
 use File::Find;
 use POSIX qw( strftime );
 use File::Path qw(make_path);
-use File::Spec;
-use File::Basename;
+#use File::Spec;
+#use File::Basename;
 use Getopt::Std;
-use feature qw/switch/;
+# use feature qw/switch/;
 
-use Data::Dumper;
+use DDP;
 use IFiles;
 
 
@@ -41,6 +41,10 @@ my %suff_max_minus_one; # assoziatives Array.
 my %version_pattern;    # assoziatives Array.
                         # Schluessel = Dateiname bis letzten Punkt; Wert = Versionsmuster (C=Creo, W=Wildfire, _=undef)
 
+
+my %files_to_move;      # assoziative Array.  
+                        # Schluessel = Quell-File; Wert = Zielpfad
+
 my $num = 0;            # momentan höchste Endung.
 
 
@@ -50,7 +54,7 @@ my $source_path;        # Quellpfad zum verschieben der Dateien.
 my $dest_path;          # Zielpfad zum verschieben der Dateien.
 my $n;                  # Anzahl der Schlüssel im Hash.
 my $timestamp;
-my $version="0.94";
+my $version="0.96";
 my %options;
 
 getopts('i:o:vdzh',\%options);
@@ -147,7 +151,6 @@ $obj_files->filter_hash_values_from_array(\@final,\%suff_max,\@final2);
 $obj_files->get_max_file_postfix(\@final2,\%suff_max_minus_one);
 
 $n = @final2; print "$timestamp -- Count \@final2: $n\n";
-
 ###########################
 # 5. Version-Pattern
 # erzeugen.
@@ -158,6 +161,7 @@ print "$timestamp -- PASS_5: Generate Version-Pattern.\n";
 print "$timestamp -- Process: Shorter Hash MAX.\n";
 $n = keys %suff_max; print "$timestamp -- Count \%suff_max: $n\n";
 $obj_files->construct_pattern(\%suff_max, \%version_pattern);
+#p %version_pattern;
 
 #############################
 # Optimierung:
@@ -179,9 +183,8 @@ $n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- Process: Shorter Hash MAX_MINUS_ONE.\n";
 $obj_files->construct_pattern(\%suff_max_minus_one, \%version_pattern);
-show_hash(\%version_pattern);
+p %version_pattern;
 
-exit 0;
 
 ###########################
 # VI. Verschieben der
@@ -189,47 +192,28 @@ exit 0;
 ###########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_6: Copy or Move Files to Archiv.\n\n";
-while ( ($key,$value) = each %version_pattern )
-{
-   #######
-   # Debug
-   #######
-   #print "$key: $value\n";
+$obj_files->construct_file_names(\%version_pattern, \%suff_max, \%files_to_move);
+p %files_to_move;
 
-   if ($value eq "CW" )
-   {
-
-   #######
-   #Debug
-   #######
-   #print "$key: $value\n";
+exit 0;
 
 
-   #my $qfile = File::Spec->catdir($key.".".$suff_max{$key}); # File-Objekt erzeugen 
-   my $qfile = File::Spec->catdir($key.".".$suff_max_minus_one{$key}); # File-Objekt erzeugen 
-                                                                       # (Filename + höchste Endung).
-   my $qdir = dirname($qfile);
-   my $dest_path_new = File::Spec->catdir($dest_path, $qdir);  # Den neuen Zielpfad zusammensetzen:
-                                                               # Zielpfad + Verzeichnisteil des Quell-Files.
-
-   #print "$qfile\n$qdir\n$dest_path_new\n";    
-   #exit 0;
-
-   make_path("$dest_path_new");
-   if(defined $options{d})
-   {
-   print "Dryrun: ";
-   print "$qfile -> $value\n";
-   }
-   else
-   {
+   #make_path("$dest_path_new");
+   #if(defined $options{d})
+   #{
+   #print "Dryrun: ";
+   #print "$qfile -> $value\n";
+   #}
+   #else
+   #{
    #print "Copy: "; copy( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-   print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-   print "$qfile -> $value\n";
-   }
-   }
+   #print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
+   #print "$qfile -> $value\n";
+   #}
+   #}
+#}
 
-}
+
 print "\n\nDestination: $dest_path\n";
 exit 0;
 

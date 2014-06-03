@@ -3,8 +3,10 @@ package IFiles;
 use strict;
 use warnings;
 
-use Data::Dumper;
-use feature qw/switch/;
+use DDP;
+use File::Basename;
+use File::Spec;
+# use feature qw/switch/;
 
 
 require Exporter;
@@ -17,7 +19,7 @@ get_max_file_postfix
 filter_hash_values_from_array 
 construct_pattern
 optimize_hash
-move_files
+construct_file_name
 testme);
 
 # Konstruktor
@@ -150,13 +152,20 @@ sub construct_pattern
        ####################
        # Version prüfen.
        ####################
-       given($firstline)
-       {
-       when (/2010370/) { $sign = "C"; } # Creo 
-       when (/2006420/) { $sign = "W"; } # Wildfire
-       default { $sign = "?"; }          # Unbekannt?
+       if ($firstline =~ /2010370/) # Creo 
+       { 
+       $sign = "C"; 
        }
-       #close $fh;
+       elsif ($firstline =~ /2006420/) # Wildfire 2.0
+       { 
+       $sign = "W"; 
+       }
+       else 
+       { 
+       $sign = "?"; # Unbekannt
+       }
+      
+       close $fh;
 
        # String erzeugen. Wenn der Hash-Key schon existiert anhängen,
        # ansonsten neu zuweisen.
@@ -197,14 +206,19 @@ sub optimize_hash
 
 }
 
-# Files verschieben die im Hash
-# dem Muster entsprechen.
-sub move_files
+# Dateinamen die im Hash
+# dem Muster entsprechen filtern
+# und den Destination-Pfad zusammen-
+# setzen.
+# Quelle und Zielpfad in einen
+# Hash kopieren.
+sub construct_file_names
 {
    my $self = shift;
    my $qhash1_ref = shift;
    my $qhash2_ref = shift;
    my $dest_path = shift;
+   my $dhash1_ref = shift;
    my $key;
    my $value;
 
@@ -214,15 +228,14 @@ sub move_files
       {
       my $qfile = File::Spec->catdir($key.".".$qhash2_ref->{$key}); # File-Objekt erzeugen 
                                                                     # (Filename + höchste Endung).
+      
       my $qdir = dirname($qfile);
-      my $dest_path_new = File::Spec->catdir($dest_path, $qdir);  # Den neuen Zielpfad zusammensetzen:
-                                                                  # Zielpfad + Verzeichnisteil des Quell-Files.
-      make_path("$dest_path_new");
-      print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-      print "$qfile -> $value\n";
+      my $dest_path_new = File::Spec->catdir($dest_path, $qdir); # Den neuen Zielpfad zusammensetzen:
+                                                                 # Zielpfad + Verzeichnisteil des Quell-Files.
+      $dhash1_ref->{$qfile} = $dest_path_new;        
       }
    }
-
+   return;
 
 }
 

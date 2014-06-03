@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 3;
 
 use IFiles;
-use Data::Dumper;
+use DDP;
 
 my @testset1 = qw(
 file10.drw.34

@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 3;
 
 use IFiles;
-use Data::Dumper;
+use DDP;
 
 my %source_hash1 = (
 't/testdata/file10.drw' => 35,
