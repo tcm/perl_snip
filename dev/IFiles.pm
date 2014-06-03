@@ -6,7 +6,6 @@ use warnings;
 use DDP;
 use File::Basename;
 use File::Spec;
-# use feature qw/switch/;
 
 
 require Exporter;
@@ -199,7 +198,7 @@ sub optimize_hash
      if ($value ne "C" )
      {
      delete $zhash1_ref->{$key};
-     delete $zhash2_ref->{$key}
+     delete $zhash2_ref->{$key};
      }
   }
   return;

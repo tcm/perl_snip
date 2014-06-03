@@ -11,10 +11,7 @@ use File::Copy;
 use File::Find;
 use POSIX qw( strftime );
 use File::Path qw(make_path);
-#use File::Spec;
-#use File::Basename;
 use Getopt::Std;
-# use feature qw/switch/;
 
 use DDP;
 use IFiles;
@@ -54,7 +51,7 @@ my $source_path;        # Quellpfad zum verschieben der Dateien.
 my $dest_path;          # Zielpfad zum verschieben der Dateien.
 my $n;                  # Anzahl der Schlüssel im Hash.
 my $timestamp;
-my $version="0.96";
+my $version="0.98";
 my %options;
 
 getopts('i:o:vdzh',\%options);
@@ -95,7 +92,7 @@ $dest_path=$options{o};
 
 
 print "Input-Path: $source_path\n";
-print "Output-Path: $dest_path\n";
+print "Output-Path: $dest_path\n\n";
 
 
 ##########################
@@ -183,7 +180,6 @@ $n = keys %suff_max_minus_one; print "$timestamp -- Count \%suff_max_minus_one: 
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- Process: Shorter Hash MAX_MINUS_ONE.\n";
 $obj_files->construct_pattern(\%suff_max_minus_one, \%version_pattern);
-p %version_pattern;
 
 
 ###########################
@@ -192,29 +188,26 @@ p %version_pattern;
 ###########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_6: Copy or Move Files to Archiv.\n\n";
-$obj_files->construct_file_names(\%version_pattern, \%suff_max, \%files_to_move);
-p %files_to_move;
+$obj_files->construct_file_names(\%version_pattern, \%suff_max, $dest_path, \%files_to_move);
 
-exit 0;
+while ( ($key,$value) = each %files_to_move )
+{
 
+   make_path("$value");
+   if(defined $options{d})
+   {
+   print "Dryrun: ";
+   print "$key -> $value\n";
+   }
+   else
+   {
+   print "Copy: "; copy( $key, $value) or die "File-Operation failed: $!";
+   #print "Move: "; move( $key, $value) or die "File-Operation failed: $!";
+   print "$key -> $value\n";
+   }
+   
+}
 
-   #make_path("$dest_path_new");
-   #if(defined $options{d})
-   #{
-   #print "Dryrun: ";
-   #print "$qfile -> $value\n";
-   #}
-   #else
-   #{
-   #print "Copy: "; copy( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-   #print "Move: "; move( $qfile, $dest_path_new) or die "File-Operation failed: $!";
-   #print "$qfile -> $value\n";
-   #}
-   #}
-#}
-
-
-print "\n\nDestination: $dest_path\n";
 exit 0;
 
 ##################
