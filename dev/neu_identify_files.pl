@@ -36,7 +36,7 @@ my %suff_max_minus_one; # assoziatives Array.
                         # Schluessel = Dateiname bis letzten Punkt; Wert = zweithöchste Endung.
 
 my %version_pattern;    # assoziatives Array.
-                        # Schluessel = Dateiname bis letzten Punkt; Wert = Versionsmuster (C=Creo, W=Wildfire, _=undef)
+                        # Schluessel = Dateiname bis letzten Punkt; Wert = Versionsmuster (C=Creo, W=Wildfire, ?=undef)
 
 
 my %files_to_move;      # assoziative Array.  
@@ -45,8 +45,10 @@ my %files_to_move;      # assoziative Array.
 my $num = 0;            # momentan höchste Endung.
 
 
-my $key;
-my $value;
+#my $key;
+#my $value;
+my $gen_source_file;    # Der erzeugte Quellpfad für das Kandidatenfile.
+my $gen_dest_path;      # Der erzeugte Zielpfad für das Kandidatenfile.
 my $source_path;        # Quellpfad zum verschieben der Dateien.
 my $dest_path;          # Zielpfad zum verschieben der Dateien.
 my $n;                  # Anzahl der Schlüssel im Hash.
@@ -54,7 +56,7 @@ my $timestamp;
 my $version="0.98";
 my %options;
 
-getopts('i:o:vdzh',\%options);
+getopts('i:o:vdh',\%options);
 
 if(defined $options{h})
 {	
@@ -63,7 +65,6 @@ print "-v: Versionsnummer.\n";
 print "-i Zu durchsuchende Verzeichnisse.\n";
 print "-o: Verzeichnisse zu dem die Files verschoben werden.\n";
 print "-d: Dryrun zeigt nur an was passiert.\n";
-print "-z: Optimierungen einschalten.\n";
 print "-h: Hilfe.\n";
 exit 0;
 }
@@ -183,27 +184,27 @@ $obj_files->construct_pattern(\%suff_max_minus_one, \%version_pattern);
 
 
 ###########################
-# VI. Verschieben der
+# 6. Verschieben der
 # Kandidaten.
 ###########################
 $timestamp = strftime '%d-%m-%Y %H:%M:%S', localtime;
 print "$timestamp -- PASS_6: Copy or Move Files to Archiv.\n\n";
 $obj_files->construct_file_names(\%version_pattern, \%suff_max, $dest_path, \%files_to_move);
 
-while ( ($key,$value) = each %files_to_move )
+while ( ($gen_source_file,$gen_dest_path) = each %files_to_move )
 {
 
-   make_path("$value");
+   make_path("$gen_dest_path");
    if(defined $options{d})
    {
    print "Dryrun: ";
-   print "$key -> $value\n";
+   print "$gen_source_file -> $gen_dest_path\n";
    }
    else
    {
-   print "Copy: "; copy( $key, $value) or die "File-Operation failed: $!";
-   #print "Move: "; move( $key, $value) or die "File-Operation failed: $!";
-   print "$key -> $value\n";
+   print "Copy: "; copy( $gen_source_file, $gen_dest_path) or die "File-Operation failed: $!";
+   #print "Move: "; move( $gen_source_file, $gen_dest_path) or die "File-Operation failed: $!";
+   print "$gen_source_file -> $gen_dest_path\n";
    }
    
 }
@@ -231,17 +232,17 @@ return;
 #
 # Hash auflisten.
 ###################
-sub show_hash
-{
+#sub show_hash
+#{
+#
+#   my $hash_ref = shift;
+#   my $key;
+#   my $value;
 
-   my $hash_ref = shift;
-   my $key;
-   my $value;
-
-   while ( ($key,$value) = each % {$hash_ref} )
-   {
-       print "$key => $value\n";
-   }
-return;
-}
+#   while ( ($key,$value) = each % {$hash_ref} )
+#   {
+#       print "$key => $value\n";
+#   }
+#return;
+#}
 

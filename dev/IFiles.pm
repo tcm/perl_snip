@@ -18,7 +18,7 @@ get_max_file_postfix
 filter_hash_values_from_array 
 construct_pattern
 optimize_hash
-construct_file_name
+construct_file_names
 testme);
 
 # Konstruktor
@@ -129,8 +129,8 @@ sub filter_hash_values_from_array
 sub construct_pattern
 {
    my $self = shift;
-   my $qhash_ref = shift;
-   my $zhash_ref = shift;
+   my $qhash_ref = shift; # Quelle: Hash mit Key: Pfad mit Dateinamen bis Punkt, Value: Endung 
+   my $zhash_ref = shift; # Ziel: Hash mit Key: Pfad mit Dateinamen bis Punkt, Value: Applikationsmuster
    my $key;
    my $value;
    my $file;
@@ -187,15 +187,15 @@ sub construct_pattern
 sub optimize_hash
 {
   my $self = shift;
-  my $qhash1_ref = shift;
-  my $zhash1_ref = shift;
-  my $zhash2_ref = shift;
+  my $qhash1_ref = shift; # Quelle: Hash mit Key: Pfad mit Dateinamen bis Punkt, Applikationsmuster
+  my $zhash1_ref = shift; # Ziel: Hash mit Key: Pfad mit Dateinamen bis Punkt, Value: Endung
+  my $zhash2_ref = shift; # Ziel: Hash mit Key: Pfad mit Dateinamen bis Punkt, Value: Endung
   my $key;
   my $value; 
 
   while ( ($key,$value) = each % {$qhash1_ref} )
   {
-     if ($value ne "C" )
+     if ($value ne "C" )  # Ist das erste Zeichen des Musters ein Creo-File?
      {
      delete $zhash1_ref->{$key};
      delete $zhash2_ref->{$key};
