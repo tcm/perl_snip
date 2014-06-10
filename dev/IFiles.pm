@@ -214,10 +214,10 @@ sub optimize_hash
 sub construct_file_names
 {
    my $self = shift;
-   my $qhash1_ref = shift;
-   my $qhash2_ref = shift;
-   my $dest_path = shift;
-   my $dhash1_ref = shift;
+   my $qhash1_ref = shift; # Quelle: Key: Hash mit Dateiname Value: Muster z.B. CW
+   my $qhash2_ref = shift; # Quelle: Key: Hash mit Dateiname bis Punkt. Value: Hoechste Endung
+   my $dest_path = shift;  # Zielpfad
+   my $dhash1_ref = shift; # Kompletter Dateiname der verschoben werden soll (Quellpfad)
    my $key;
    my $value;
 
