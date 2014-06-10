@@ -144,7 +144,7 @@ sub construct_pattern
        $file = $key.".".$value;
 
        #print $file."\n";
-       open my $fh, '<', $file;
+       open my $fh, '<', $file or die "Could not open file: $file\n";
        my $firstline = <$fh>;
        close $fh;
 
