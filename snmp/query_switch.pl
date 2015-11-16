@@ -11,17 +11,21 @@ my @switch_names_sw2524 = qw( sw2524-1 sw2524-3 sw2524-4 sw2524-5 sw2524-6 sw252
 my @switch_names_sw2650 = qw( sw2650-1 );
 my @switch_names_sw4208 = qw( sw4208-1 );
 my @switch_names_sw5406 = qw( sw5406-1 );
+#my @switch_names_sw1910 = qw( sw1910-1 sw1910-2 );
 
-my @ports_sw2524 = (0..24);
-my @ports_sw2650 = (0..48);
-my @ports_sw4208 = (0, 2, 4..144);
-my @ports_sw5406 = (0..72);
+my @ports_sw2524 = (1..24);
+my @ports_sw2650 = (1..48);
+my @ports_sw4208 = (2, 4..154);
+my @ports_sw5406 = (1..72);
+#my @ports_sw1910 = (0..8);
 
 
 
 my $mac_dec_with_space = qr/\d+\.\d+\.\d+\.\d+\.\d+\.\d+\s/; # Dezimale MAC-Adresse mit Space am Ende
 my $digits_at_the_end = qr/\d+$/;                            # Ein oder mehrere Ziffern am Ende
+my $a_point = qr/\./;                                        # Ein Punkt.
 
+# http://www.mibdepot.com/
 my $snmp_mib = "1.3.6.1.2.1.17.4.3.1.2";
 my $count = 0;
 
@@ -45,10 +49,16 @@ foreach my $switch_name (@switch_names_sw4208)
 {
    &query_switch_by_name($switch_name, \@ports_sw4208);
 }
-# SW5406
-#foreach my $switch_name (@switch_names_sw4208)
+# SW1910
+#foreach my $switch_name (@switch_names_sw1910)
 #{
-#   &query_switch_by_name($switch_name, \@ports_sw4208);
+#   &query_switch_by_name($switch_name, \@ports_sw1910);
+#}
+
+# SW5406
+#foreach my $switch_name (@switch_names_sw5406)
+#{
+#   &query_switch_by_name($switch_name, \@ports_sw5406);
 #}
 
 exit 0;
@@ -98,7 +108,7 @@ sub convert_mac_dec_to_hex
    my $address_dec = shift;
    my $address_hex;
    
-  my @bytes = split(/\./, $address_dec);
+  my @bytes = split(/$a_point/, $address_dec);
 
   foreach my $n ( @bytes )
   {
