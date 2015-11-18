@@ -90,23 +90,28 @@ sub query_switch_by_name
    # und CSV-Zeile aufbauen
    foreach my $line (@filtered_port_numbers)
    {
+	my $mac_address_dec;
+        my $mac_address_hex;
+        my $port_number;
+
         $count++;
-        print "$count,$switch_name,";
-	if ($line =~ /$mac_dec_with_space/)                                     # MAC-Address
-        { 
-        my $mac_address_dec = ltrim(${^MATCH});
-        print &convert_mac_dec_to_hex($mac_address_dec).","; 
-        } 
-	if ($line =~ /$digits_at_the_end/) { print "${^MATCH}"."\n"; }          # Port-Number
-        
+
+	$line =~ /$mac_dec_with_space/;                                         # MAC-Address
+        $mac_address_dec = ltrim(${^MATCH});
+        $mac_address_hex = &convert_mac_dec_to_hex($mac_address_dec);       
+         
+	$line =~ /$digits_at_the_end/; 
+        $port_number = ${^MATCH};                                               # Port-Number
+
+        printf("%s,%s,%s,%s\n",$count,$switch_name,$mac_address_hex,$port_number);
    }
 
 }
 
 sub convert_mac_dec_to_hex
 {
-   my $address_dec = shift;
-   my $address_hex;
+  my $address_dec = shift;
+  my $address_hex;
    
   my @bytes = split(/$a_point/, $address_dec);
 
