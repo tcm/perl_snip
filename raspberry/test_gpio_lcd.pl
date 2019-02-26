@@ -1,5 +1,8 @@
 #!/usr/bin/perl
- 
+#
+use strict;
+use warnings;
+
 use RPi::Pin;
 use RPi::Const qw(:all);
 
@@ -14,12 +17,50 @@ my %segment = ( "a" => 7,
                 "01" => 14,
                 "10" => 15 );
 
-my %digit = ( 0 => "abcdef" );	
+my %digit = ( 0 => "abcdef",
+              1 => "bc",
+              2 => "abged",
+              3 => "abgcd",
+              4 => "fbgc",
+              5 => "afgcd",
+              6 => "fedcg",
+              7 => "abc",
+              8 => "abcdefg",
+              9 => "fabgcd",
+              dp => "dp");	
 
-#&do_it_all;
-&digit_switch(0,1);
+#&do_it_all_segments;
+&do_it_all_digits;
 
-sub digit_switch {
+
+
+exit 0;
+
+sub do_it_all_digits {
+  &segment_switch("01",1,1);
+  &segment_switch("10",0,1);
+  &test_all_digits;
+   
+  sleep(3);
+
+  &segment_switch("10",1,1);
+  &segment_switch("01",0,1);
+  &test_all_digits;
+}
+
+
+sub test_all_digits {
+
+  foreach my $num (0..9) {
+
+      &digit_display($num,1);
+   }
+
+}
+
+
+# Ziffer anzeigen.
+sub digit_display {
    my $num = shift;
    my $delay = shift;
 
@@ -32,8 +73,7 @@ sub digit_switch {
    }
 }
 
-
-sub do_it_all {
+sub do_it_all_segments {
   &segment_switch("01",1,1);
   &segment_switch("10",0,1);
   &test_all_segments;
@@ -44,26 +84,21 @@ sub do_it_all {
 }
 
 sub test_all_segments {
-   &segment_switch("a",1,1);
-   &segment_switch("b",1,1);
-   &segment_switch("c",1,1);
-   &segment_switch("d",1,1);
-   &segment_switch("e",1,1);
-   &segment_switch("f",1,1);
-   &segment_switch("g",1,1);
-   &segment_switch("dp",1,1);
+   my $teststring="abcdefg";
+
+   foreach my $char (split //, $teststring) {
+	   &segment_switch($char,1,1);
+   }
+
    sleep(5);
-   &segment_switch("a",0,1);
-   &segment_switch("b",0,1);
-   &segment_switch("c",0,1);
-   &segment_switch("d",0,1);
-   &segment_switch("e",0,1);
-   &segment_switch("f",0,1);
-   &segment_switch("g",0,1);
-   &segment_switch("dp",0,1);
+
+   foreach my $char (split //, $teststring) {
+	   &segment_switch($char,0,1);
+   }
+
 }
 
-
+# Segemnt an- oder abschalten.
 sub segment_switch {
    my $number = shift;
    my $state = shift;
@@ -83,4 +118,3 @@ sub segment_switch {
 }
 
 
-exit 0;
