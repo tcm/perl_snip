@@ -31,7 +31,7 @@ my %digit = ( 0 => "abcdef",
 
 #&do_it_all_segments;
 &do_it_all_digits;
-
+#&digit_display_two("01",5);
 
 
 exit 0;
@@ -59,7 +59,7 @@ sub test_all_digits {
 }
 
 
-# Ziffer anzeigen.
+# Ziffer anzeigen einstellig.
 sub digit_display {
    my $num = shift;
    my $delay = shift;
@@ -70,6 +70,26 @@ sub digit_display {
    sleep($delay);
    foreach my $char (split //, $digit{$num}) {
 	   &segment_switch($char,0,0);
+   }
+}
+# Ziffer anzeigen zweistellig.
+sub digit_display_two {
+   my $num = shift;
+   my $delay = shift;
+   
+   my $digit0 = substr($num,1);
+   my $digit1 = substr($num,0,1);
+
+   #print "$digit1, $digit0";
+   
+   &segment_switch("01",1,1);
+   foreach my $char (split //, $digit{$digit0}) {
+	   &segment_switch($char,1,0);
+   }
+   
+   &segment_switch("10",1,1);
+   foreach my $char (split //, $digit{$digit1}) {
+	   &segment_switch($char,1,0);
    }
 }
 
