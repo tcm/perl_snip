@@ -60,12 +60,33 @@ sub function1 {
 =cut
 
 sub function2 {
-  my $self = shift;
+   my $self = shift;
   
-  my $e = $self->j + $self->k;
+   my @seed =  (8, 6, 7, 5, 3, 0, 9);
+   my $out;
+   my @arr_out = ();
 
-  return $e;
+   my $len = scalar @seed;
 
+   for ( my $n = 0; $n < 10; $n++) {
+   	for ( my $i = 0; $i < $len; $i++) {
+
+	           #print "$i ";
+
+		   if ( $i == 0 ) {              
+		      $out = ($seed[$self->j - 1] + $seed[$self->k - 1]) % $self->mod;  # calculate new element.
+
+                   } elsif ($i > 0 && $i < 6 ) { 
+		       $seed[$i] = $seed[$i + 1]; # shift the array to the left.
+
+	           }
+	           else {
+		      $seed[$i] = $out;         # store the new element in last position of seed array.
+		      push @arr_out, $seed[$i]; # store new element in output array.
+	           }
+         }   
+  } 
+  return @arr_out;
 }
 
 =head1 AUTHOR
