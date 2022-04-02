@@ -1,0 +1,5 @@
+Statusline
+[% FOREACH record = recordset -%]
+[% record.0 %],,,[% record.1 %],,[% record.2 %],[% record.2 %],,,21.10.36
+
+[%- END %]

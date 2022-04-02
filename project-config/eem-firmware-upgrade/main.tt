@@ -1,0 +1,20 @@
+event manager applet [% name %] authorization bypass
+event none sync yes maxrun [% maxtime %]
+action 01.0 cli command "enable"
+action 02.0 syslog msg "Copy new firmware on the flash"
+action 02.1 cli command "copy usbflash0:[% firmware %] flash:" pattern "[% firmware %]"
+action 02.2 cli command "[% firmware %]"
+action 04.0 cli command "conf t"
+action 05.0 cli command "no boot system"
+action 06.0 cli command "boot system bootflash:packages.conf"
+action 07.0 cli command "end"
+action 08.0 cli command "write memory"
+action 08.5 syslog msg "Done-1"
+action 09.0 wait 10
+action 10.0 syslog msg "Done-1"
+action 11.0 cli command "enable"
+action 12.0 syslog msg "Installing new firmware"
+action 13.0 cli command "install add file flash:[% firmware %] activate commit" pattern "y/n"
+action 14.0 cli command "y" pattern "y/n"
+action 15.0 syslog msg  "Reloading device to upgrade code"
+action 16.0 cli command "y"

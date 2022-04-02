@@ -1,0 +1,5 @@
+{
+ "name":  "step12",
+ "maxtime": 1800,
+ "firmware": "cat9k_lite_iosxe.16.12.03a.SPA.bin"
+}

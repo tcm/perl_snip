@@ -1,0 +1,8 @@
+event manager applet [% name %] authorization bypass
+event none sync yes maxrun [% maxtime %]
+action 01.0 syslog msg "Deleting no need files"
+action 02.0 cli command "enable"
+action 03.0 cli command "install remove inactive" pattern "y/n"
+action 04.0 syslog msg "Confirm remove"
+action 05.0 cli command "y"
+action 06.0 syslog msg "Done-3"
