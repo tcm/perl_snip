@@ -11,7 +11,7 @@ use English;
 my @record;
 my @AoA;
 ############################################
-# Read data from CSV-File and store it an a
+# Read data from CSV-File and store into an
 # Array of Arrays.
 ############################################
 while (<>) {
