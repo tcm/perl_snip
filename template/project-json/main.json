@@ -1,0 +1,4 @@
+{
+"Devicename": "sw-40-ed23",
+"Location": "BT-R10-HE12",
+"Vlans": [ 400, 401, 522, 560, 750 ] }
