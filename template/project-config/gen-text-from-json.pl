@@ -10,10 +10,10 @@ use Getopt::Std;
 use Data::Dumper;
 use File::Spec;
 
-my $parameter_a;
+my $parameter_a = "value_a";
 my $projectdir;
 my $hash_ref;
-my $version = "0.3";
+my $version = "0.31";
 my %options;
 
 ##############################################################
@@ -37,10 +37,6 @@ if ( defined $options{v} ) {
 
 if ( defined $options{a} ) {
     $parameter_a = $options{a};
-}
-else {
-    print "-a: Parameter_a has no value.\n";
-    exit 1;
 }
 
 if ( defined $options{p} ) {
